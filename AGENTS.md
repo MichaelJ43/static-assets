@@ -1,5 +1,7 @@
 # Agent context: `@michaelj43/static-assets`
 
+**Cross-repo / consumer work:** [docs/M43_INTEGRATION.md](docs/M43_INTEGRATION.md) is the single “give this to an AI” handoff. Link that file (or the repo) when asking another codebase to adopt m43.
+
 ## Purpose
 
 This repository ships **shared front-end assets** for personal sites and apps: CSS design tokens (`m43-tokens.css`), **shell** (header / footer) and **form/table primitives** (`m43-shell.css`, `m43-primitives.css`), and a small **browser analytics** script (`m43-analytics.js`) that posts to a JSON ingest API. Built files live in **`dist/v1/`** and are versioned for stable CDN paths.
