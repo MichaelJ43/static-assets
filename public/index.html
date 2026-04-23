@@ -4,13 +4,37 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
-    <title>m43 static</title>
+    <title>m43 static assets</title>
+    <link rel="stylesheet" href="/v1/m43-tokens.css" />
+    <link rel="stylesheet" href="/v1/m43-shell.css" />
+    <link rel="stylesheet" href="/v1/m43-primitives.css" />
   </head>
-  <body>
-    <p>
-      Shared assets are published under
-      <code>/v1/</code>
-      (for example, <code>m43-tokens.css</code>).
-    </p>
+  <body class="m43 m43-page">
+    <div class="m43-page__body m43">
+      <header class="m43-site-header">
+        <div class="m43-site-header__row">
+          <h1>static-assets</h1>
+          <div class="m43-site-header__auth" data-m43-auth-header></div>
+        </div>
+        <p class="m43-intro">Shared v1 files live under <code>/v1/</code> (CDN path after deploy).</p>
+        <p class="m43-intro" style="margin-top: 0.5rem">
+          Optional auth header: sign in uses <code>returnUrl</code> to return here after login (shared-api-platform).
+        </p>
+      </header>
+      <main class="m43-main">
+        <p class="m43-section-title">v1</p>
+        <p>
+          Example:
+          <code>m43-tokens.css</code>, <code>m43-shell.css</code>, <code>m43-primitives.css</code>, <code>m43-analytics.js</code>, <code>m43-auth-header.js</code>.
+        </p>
+      </main>
+    </div>
+    <script
+      src="/v1/m43-auth-header.js"
+      defer
+      data-m43-auth
+      data-m43-api="https://api.michaelj43.dev"
+      data-m43-auth-origin="https://auth.michaelj43.dev"
+    ></script>
   </body>
 </html>

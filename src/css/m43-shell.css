@@ -71,3 +71,109 @@ main.m43-main {
 .m43-page__body {
   flex: 1;
 }
+
+/* Optional top row: title + shared-api-platform auth (see m43-auth-header.js) */
+.m43-site-header__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin: 0 0 0.5rem;
+}
+
+.m43-site-header__row > h1 {
+  margin: 0 0 0.75rem;
+  flex: 1;
+  min-width: min(100%, 12rem);
+}
+
+.m43-site-header__auth {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.m43-auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 2.5rem;
+}
+
+.m43-auth-header .m43-button:focus-visible,
+.m43-auth-user__trigger:focus-visible,
+.m43-auth-user__item:focus-visible {
+  outline: 2px solid var(--m43-ring);
+  outline-offset: var(--m43-ring-offset);
+}
+
+.m43-auth-user {
+  position: relative;
+}
+
+.m43-auth-user__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 14rem;
+  font: inherit;
+  line-height: 1.2;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--m43-radius-md);
+  border: 1px solid var(--m43-border);
+  background: var(--m43-surface);
+  color: var(--m43-text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.m43-auth-user__icon {
+  flex-shrink: 0;
+  display: block;
+  opacity: 0.9;
+}
+
+.m43-auth-user__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: var(--m43-muted);
+}
+
+.m43-auth-user__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.3rem);
+  z-index: 20;
+  min-width: 10rem;
+  margin: 0;
+  padding: 0.35rem 0;
+  list-style: none;
+  background: var(--m43-elevated);
+  border: 1px solid var(--m43-border);
+  border-radius: var(--m43-radius-sm);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+}
+
+.m43-auth-user__menu[hidden] {
+  display: none;
+}
+
+.m43-auth-user__item {
+  display: block;
+  width: 100%;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  padding: 0.45rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--m43-text);
+  cursor: pointer;
+}
+
+.m43-auth-user__item:hover,
+.m43-auth-user__item:focus-visible {
+  background: var(--m43-surface);
+}

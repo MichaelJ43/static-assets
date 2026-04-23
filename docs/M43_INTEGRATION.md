@@ -5,7 +5,7 @@
 | Resource | URL / package |
 |----------|-----------------|
 | **Source & releases** | [github.com/MichaelJ43/static-assets](https://github.com/MichaelJ43/static-assets) |
-| **Published assets (after deploy)** | `https://static.michaelj43.dev/v1/` — files: `m43-tokens.css`, `m43-shell.css`, `m43-primitives.css`, `m43-analytics.js` |
+| **Published assets (after deploy)** | `https://static.michaelj43.dev/v1/` — files: `m43-tokens.css`, `m43-shell.css`, `m43-primitives.css`, `m43-analytics.js`, `m43-auth-header.js` |
 | **npm** | `@michaelj43/static-assets` (CSS via `import` or bundler; JS path in `package.json` `exports`) |
 
 > **Path version:** The `/v1/` prefix is the stability contract. If a future `v2` ships breaking class or token renames, old consumers keep using `v1` until they migrate.
@@ -29,6 +29,7 @@ If you need **legacy** browsers, retest in your app; m43 does not target Interne
 2. **Shell** (`m43-shell.css`) — **site shell** layout: `m43-site-header`, `m43-site-footer`, `m43-main`, `m43-nav`, `m43-page`. Use the **`m43-` classes**; they do not require renaming existing app-specific BEM, but the **visual** shell should use these for consistency.
 3. **Primitives** (`m43-primitives.css`) — buttons, labeled fields, error line, data tables, cards (including a narrow “auth card” style).
 4. **Analytics** (`m43-analytics.js`) — optional, small script: sends `pageview` events to `POST {api}/analytics/events?v=1` with a stable `appId` per product. **No cookies;** CORS on the API must allow your page origin.
+5. **Auth header** (`m43-auth-header.js`) — optional: **Sign in** (links to the auth SPA with `returnUrl` set to the **current page**) or a **user icon** and **Sign out** when `GET {api}/v1/auth/me` succeeds with the `sap_session` cookie. Matches **shared-api-platform** ([`auth-spa` query + login `returnUrl`](https://github.com/MichaelJ43/shared-api-platform/blob/main/auth-spa/src/main.ts), session cookie on the apex per [auth-and-dashboard](https://github.com/MichaelJ43/shared-api-platform/blob/main/docs/auth-and-dashboard.md)).
 
 **Load order (CSS):** always **tokens → shell → primitives** (and after that, the app’s own CSS for product-specific layout).
 
@@ -70,6 +71,43 @@ Add before `</head>` (CSS) and before `</body>` (script):
 - `data-m43-spa` (optional) — set to `true` or `1` for **client-side navigation** (React Router, Vue Router, etc.); the script tracks `pushState` / `replaceState` / `popstate`. For strictly static multi-page sites, omit or set `false`.
 
 **Debug:** add `?m43debug=1` to the page URL to log tracker diagnostics to the console.
+
+**Auth header (`m43-auth-header.js`, optional, requires HTTPS page + shared-api-platform CORS and cookies on your apex):**
+
+1. In the **site header**, add an **empty** placeholder the script will fill, and a **row** for title + auth (see `m43-site-header__row` in `m43-shell.css`):
+
+```html
+<header class="m43-site-header">
+  <div class="m43-site-header__row">
+    <h1>Your app</h1>
+    <div
+      class="m43-site-header__auth"
+      data-m43-auth-header
+    ></div>
+  </div>
+  <p class="m43-intro">…</p>
+  <nav class="m43-nav">…</nav>
+</header>
+```
+
+2. After other scripts (or with `defer`), load the client **once**:
+
+```html
+<script
+  src="https://static.michaelj43.dev/v1/m43-auth-header.js"
+  defer
+  data-m43-auth
+  data-m43-api="https://api.michaelj43.dev"
+  data-m43-auth-origin="https://auth.michaelj43.dev"
+></script>
+```
+
+- `data-m43-auth` (required) — marks this script for configuration.
+- `data-m43-api` (optional) — API base; default `https://api.michaelj43.dev` (trailing slash stripped).
+- `data-m43-auth-origin` (optional) — sign-in page origin; default `https://auth.michaelj43.dev`. The script sends users to `…?returnUrl=<encodeURIComponent(current page URL)>`, which the [auth SPA](https://github.com/MichaelJ43/shared-api-platform/blob/main/auth-spa/src/main.ts) passes through to `POST /v1/auth/login` as `returnUrl` (server allow-listed per [returnUrl](https://github.com/MichaelJ43/shared-api-platform/blob/main/lambda/src/returnUrl.ts)).
+- **Alternate mount** — if you cannot use `data-m43-auth-header`, set e.g. `data-m43-auth-mount="#x"` on the script and put `id="x"` on your container element.
+
+`returnUrl` must be **https** to be accepted after login. Local **http** dev may fall back to `AUTH_DEFAULT_APP_URL` in the API.
 
 ### B. npm + bundler (Vite, esbuild, etc.)
 
@@ -145,6 +183,8 @@ Implement the m43 design system in this project.
    - data-m43-app="<UNIQUE_STABLE_APP_ID>"
    - data-m43-api="https://api.michaelj43.dev" if not default
    - data-m43-spa="true" only if this is a client-side–routed SPA
+
+4b. (Optional) Add `m43-auth-header.js` with `data-m43-auth`, a `data-m43-auth-header` mount in the site header, and the same `data-m43-api` / `data-m43-auth-origin` as other apps on `*.michaelj43.dev` so sign-in includes `returnUrl` and session cookies apply.
 
 5. Do not remove working product features; only align the **site shell** and shared UI. If something conflicts, keep the product behavior and leave a short comment.
 
