@@ -2,6 +2,8 @@
 
 **Cross-repo / consumer work:** [docs/M43_INTEGRATION.md](docs/M43_INTEGRATION.md) is the single “give this to an AI” handoff. Link that file (or the repo) when asking another codebase to adopt m43.
 
+**Browsers:** Target current **Chrome, Firefox, Safari, and Edge** (see [M43_INTEGRATION.md#browser-support](docs/M43_INTEGRATION.md#browser-support)). Avoid UI-only jargon “chrome” in docs without disambiguation from the Chrome product.
+
 ## Purpose
 
 This repository ships **shared front-end assets** for personal sites and apps: CSS design tokens (`m43-tokens.css`), **shell** (header / footer) and **form/table primitives** (`m43-shell.css`, `m43-primitives.css`), and a small **browser analytics** script (`m43-analytics.js`) that posts to a JSON ingest API. Built files live in **`dist/v1/`** and are versioned for stable CDN paths.

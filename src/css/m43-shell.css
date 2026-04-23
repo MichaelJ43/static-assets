@@ -1,5 +1,5 @@
 /**
- * m43 site chrome — header, footer, main content column.
+ * m43 site shell — header, footer, main content (UI “chrome” in the old sense, not a browser name).
  * Requires m43-tokens.css first.
  */
 .m43-site-header {

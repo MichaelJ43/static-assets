@@ -10,12 +10,23 @@
 
 > **Path version:** The `/v1/` prefix is the stability contract. If a future `v2` ships breaking class or token renames, old consumers keep using `v1` until they migrate.
 
+**Terminology:** In UI literature, *chrome* sometimes means the **fixed header/footer/toolbars around a page** (not a browser name). In this system we use **site shell** in prose and the **`m43-shell.css`** file name to avoid confusion with **Google Chrome** the product.
+
+## Browser support
+
+**Supported engines (current, evergreen):** **Google Chrome**, **Mozilla Firefox**, **Apple Safari**, and **Microsoft Edge** (Chromium). Treat these as the test matrix for layout, tokens, focus rings, and the analytics script.
+
+- **CSS:** `custom properties`, `prefers-color-scheme`, `:focus-visible`, and `text-decoration-thickness` are used as in modern baselines. Where `color-mix` is used for a primary button border, a **fallback** is provided for older Safari that does not support it.
+- **Analytics (`m43-analytics.js`):** Standard Web APIs only (`fetch`, `sessionStorage`, `history`, `queueMicrotask`, with a `crypto.randomUUID` fallback). No plugin or single-vendor API.
+
+If you need **legacy** browsers, retest in your app; m43 does not target Internet Explorer or pre-Chromium Edge.
+
 ---
 
 ## 1. What you get
 
 1. **Tokens** (`m43-tokens.css`) — `:root` custom properties (`--m43-*`), light/dark via `prefers-color-scheme`, base typography and links when the page uses a `.m43` wrapper or `body.m43`.
-2. **Shell** (`m43-shell.css`) — page chrome: `m43-site-header`, `m43-site-footer`, `m43-main`, `m43-nav`, `m43-page` layout. Use the **`m43-` classes**; they do not require renaming existing app-specific BEM, but the **visual** shell should use these for consistency.
+2. **Shell** (`m43-shell.css`) — **site shell** layout: `m43-site-header`, `m43-site-footer`, `m43-main`, `m43-nav`, `m43-page`. Use the **`m43-` classes**; they do not require renaming existing app-specific BEM, but the **visual** shell should use these for consistency.
 3. **Primitives** (`m43-primitives.css`) — buttons, labeled fields, error line, data tables, cards (including a narrow “auth card” style).
 4. **Analytics** (`m43-analytics.js`) — optional, small script: sends `pageview` events to `POST {api}/analytics/events?v=1` with a stable `appId` per product. **No cookies;** CORS on the API must allow your page origin.
 
@@ -135,7 +146,9 @@ Implement the m43 design system in this project.
    - data-m43-api="https://api.michaelj43.dev" if not default
    - data-m43-spa="true" only if this is a client-side–routed SPA
 
-5. Do not remove working product features; only align chrome and shared UI. If something conflicts, keep the product behavior and leave a short comment.
+5. Do not remove working product features; only align the **site shell** and shared UI. If something conflicts, keep the product behavior and leave a short comment.
+
+6. Verify the result in **Chrome, Firefox, Safari, and Edge** (current versions); m43 is built for that matrix (see “Browser support” at the top of this doc).
 
 After changes, list files touched and any follow-ups (e.g. CORS if origin is not under the allowed apex).
 ```
