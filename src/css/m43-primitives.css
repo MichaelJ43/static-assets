@@ -31,7 +31,13 @@
 .m43-button--primary {
   background: var(--m43-accent);
   color: #fff;
-  border-color: color-mix(in srgb, var(--m43-accent) 60%, #000 40%);
+  /* rgba works everywhere; color-mix refines the edge in supporting browsers */
+  border-color: rgba(0, 0, 0, 0.2);
+}
+@supports (color: color-mix(in srgb, red 0%, blue 100%)) {
+  .m43-button--primary {
+    border-color: color-mix(in srgb, var(--m43-accent) 60%, #000 40%);
+  }
 }
 
 .m43-button--primary:hover {
