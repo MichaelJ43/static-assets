@@ -53,12 +53,12 @@ body.m43,
 }
 
 a.m43-link,
-.m43 a {
+.m43 a:not(.m43-button, .m43-button--primary) {
   color: var(--m43-accent);
   text-decoration-thickness: 0.08em;
 }
 
 a.m43-link:hover,
-.m43 a:hover {
+.m43 a:not(.m43-button, .m43-button--primary):hover {
   text-decoration: underline;
 }

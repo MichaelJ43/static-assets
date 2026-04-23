@@ -28,6 +28,21 @@
   max-width: 100%;
 }
 
+/* <a> buttons: no underline; keep label colors in sync with <button> (global .m43 link rules use :not(.m43-button) in m43-tokens) */
+a.m43-button {
+  text-decoration: none;
+}
+
+a.m43-button:not(.m43-button--primary),
+a.m43-button:not(.m43-button--primary):visited {
+  color: var(--m43-text);
+}
+
+a.m43-button.m43-button--primary,
+a.m43-button.m43-button--primary:visited {
+  color: #fff;
+}
+
 .m43-button--primary {
   background: var(--m43-accent);
   color: #fff;

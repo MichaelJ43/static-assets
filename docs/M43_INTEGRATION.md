@@ -139,6 +139,7 @@ import '@michaelj43/static-assets/m43-primitives.css'
 - **Section label** — `class="m43-section-title"`.
 - **Primary / default button** — `class="m43-button m43-button--primary"`.
 - **Secondary button** — `class="m43-button"`.
+- **Button as link** — `a` with the same `m43-button` / `m43-button--primary` classes uses **button** label colors, not the global **in-text** link color (`.m43 a` in tokens excludes `m43-button*`), so the label stays legible in light and dark.
 - **Labeled field** — wrap in `class="m43-field"`, `label` + input with `class="m43-input"`.
 - **Error text** — `class="m43-message--error"`.
 - **Table** — `class="m43-table"`.
