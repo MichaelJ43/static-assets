@@ -16,6 +16,7 @@ output "cloudfront_domain" {
 output "site_url" {
   value       = local.use_custom_domain ? "https://${local.custom_domain_host}" : "https://${aws_cloudfront_distribution.site.domain_name}"
   description = "Public site URL (HTTPS)."
+  sensitive   = true
 }
 
 output "stack_prefix" {
