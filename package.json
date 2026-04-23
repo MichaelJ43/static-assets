@@ -1,0 +1,40 @@
+{
+  "name": "@michaelj43/static-assets",
+  "version": "0.1.0",
+  "description": "Shared CSS design tokens, shell, primitives, and analytics client for michaelj43.dev properties",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MichaelJ43/static-assets.git"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "AGENTS.md"
+  ],
+  "exports": {
+    "./m43-tokens.css": "./dist/v1/m43-tokens.css",
+    "./m43-shell.css": "./dist/v1/m43-shell.css",
+    "./m43-primitives.css": "./dist/v1/m43-primitives.css",
+    "./m43-analytics.js": "./dist/v1/m43-analytics.js"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "clean": "node -e \"import('node:fs/promises').then(fs => fs.rm('dist', { recursive: true, force: true }))\"",
+    "prepublishOnly": "npm run test:ci && npm run build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:ci": "vitest run",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@types/node": "^22.10.0",
+    "esbuild": "^0.24.2",
+    "eslint": "^9.19.0",
+    "globals": "^17.5.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0",
+    "vitest": "^3.0.0"
+  }
+}

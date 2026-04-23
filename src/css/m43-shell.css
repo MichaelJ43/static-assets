@@ -1,0 +1,73 @@
+/**
+ * m43 site chrome — header, footer, main content column.
+ * Requires m43-tokens.css first.
+ */
+.m43-site-header {
+  max-width: var(--m43-content-max);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--m43-border);
+}
+
+.m43-site-header h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  letter-spacing: -0.02em;
+  color: var(--m43-text);
+}
+
+.m43-intro {
+  margin: 0 0 1rem;
+  color: var(--m43-muted);
+  max-width: 48rem;
+}
+
+.m43-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.m43-nav a {
+  color: var(--m43-accent);
+  text-decoration-thickness: 0.08em;
+}
+
+.m43-main,
+main.m43-main {
+  max-width: var(--m43-content-max);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.m43-section-title {
+  margin: 0 0 1.25rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--m43-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.m43-site-footer {
+  max-width: var(--m43-content-max);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  border-top: 1px solid var(--m43-border);
+  font-size: 0.875rem;
+  color: var(--m43-muted);
+}
+
+.m43-site-footer p {
+  margin: 0;
+}
+
+.m43-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.m43-page__body {
+  flex: 1;
+}

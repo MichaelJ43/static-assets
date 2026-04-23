@@ -1,0 +1,61 @@
+/**
+ * m43 design tokens — light/dark via prefers-color-scheme.
+ * Consumers may override in a local layer; prefer var(--m43-*) in components.
+ */
+:root {
+  color-scheme: light dark;
+  --m43-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --m43-font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  --m43-bg: #0f1218;
+  --m43-surface: #171c26;
+  --m43-elevated: #1b2230;
+  --m43-text: #e8ecf4;
+  --m43-muted: #9aa3b5;
+  --m43-accent: #6ea8fe;
+  --m43-border: #2a3140;
+  --m43-danger: #f87171;
+  --m43-success: #4ade80;
+  --m43-radius-sm: 0.35rem;
+  --m43-radius-md: 0.5rem;
+  --m43-radius-lg: 0.75rem;
+  --m43-content-max: 52rem;
+  --m43-duration: 0.2s;
+  --m43-ease: ease;
+  --m43-ring: var(--m43-accent);
+  --m43-ring-offset: 2px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --m43-bg: #f6f7fb;
+    --m43-surface: #ffffff;
+    --m43-elevated: #ffffff;
+    --m43-text: #1a1f2b;
+    --m43-muted: #5c6578;
+    --m43-accent: #1a56c9;
+    --m43-border: #d9dee8;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body.m43,
+.m43 {
+  font-family: var(--m43-font-sans);
+  line-height: 1.55;
+  background: var(--m43-bg);
+  color: var(--m43-text);
+}
+
+a.m43-link,
+.m43 a {
+  color: var(--m43-accent);
+  text-decoration-thickness: 0.08em;
+}
+
+a.m43-link:hover,
+.m43 a:hover {
+  text-decoration: underline;
+}

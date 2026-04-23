@@ -1,0 +1,119 @@
+/**
+ * m43 form and data primitives.
+ * Requires m43-tokens.css first; optional after m43-shell.css.
+ */
+:where(
+  .m43 button,
+  .m43 a,
+  .m43 input,
+  .m43 select,
+  .m43 textarea
+):focus-visible {
+  outline: 2px solid var(--m43-ring);
+  outline-offset: var(--m43-ring-offset);
+}
+
+.m43-button {
+  display: inline-block;
+  font: inherit;
+  line-height: 1.2;
+  padding: 0.5rem 1rem;
+  border-radius: var(--m43-radius-md);
+  border: 1px solid var(--m43-border);
+  background: var(--m43-surface);
+  color: var(--m43-text);
+  cursor: pointer;
+  text-align: center;
+  width: auto;
+  max-width: 100%;
+}
+
+.m43-button--primary {
+  background: var(--m43-accent);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--m43-accent) 60%, #000 40%);
+}
+
+.m43-button--primary:hover {
+  filter: brightness(1.05);
+}
+
+.m43-button:disabled,
+.m43-button[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.m43-input,
+.m43-field input[type="text"],
+.m43-field input[type="email"],
+.m43-field input[type="password"],
+.m43-field input[type="search"],
+.m43-field input[type="date"],
+.m43-field input:not([type]) {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font: inherit;
+  padding: 0.45rem 0.55rem;
+  border-radius: var(--m43-radius-sm);
+  border: 1px solid var(--m43-border);
+  background: var(--m43-elevated);
+  color: var(--m43-text);
+}
+
+.m43-field {
+  margin-bottom: 0.9rem;
+}
+
+.m43-field label,
+.m43-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--m43-text);
+}
+
+.m43-message--error {
+  color: var(--m43-danger);
+  font-size: 0.9rem;
+  min-height: 1.2rem;
+}
+
+.m43-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.m43-table th,
+.m43-table td {
+  border: 1px solid var(--m43-border);
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  word-break: break-word;
+}
+
+.m43-table th {
+  background: var(--m43-surface);
+  color: var(--m43-text);
+}
+
+.m43-card {
+  background: var(--m43-elevated);
+  border: 1px solid var(--m43-border);
+  border-radius: var(--m43-radius-lg);
+  padding: 1.25rem 1.35rem;
+}
+
+.m43-card--tight {
+  max-width: 20rem;
+  margin: 3rem auto;
+  padding: 1.5rem;
+}
+
+.m43-help {
+  font-size: 0.875rem;
+  color: var(--m43-muted);
+  margin-top: 0.2rem;
+}
