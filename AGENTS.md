@@ -13,6 +13,7 @@ This repository ships **shared front-end assets** for personal sites and apps: C
 - `src/css/` — source stylesheets; copied into `dist/v1/` by the build.
 - `src/analytics-core.ts` — testable logic for the tracker (session id, config from `<script>`, `fetch` to the API). No side effects on import.
 - `src/m43-analytics.ts` — browser entry: attaches `globalThis.M43Analytics` and calls `initM43Analytics()`. Bundled to `dist/v1/m43-analytics.js` (IIFE, minified).
+- `src/m43-auth-header.ts` / `src/auth-header-core.ts` — optional **Sign in** / user menu for **shared-api-platform** (`GET /v1/auth/me`, `POST /v1/auth/logout`, `returnUrl` via auth origin). Bundled to `dist/v1/m43-auth-header.js`.
 - `public/index.html` — human-readable stub at the bucket root; build copies to `dist/index.html`.
 - `scripts/build.mjs` — copies CSS, copies `index.html`, runs **esbuild** for the analytics bundle.
 - `deploy/terraform/aws/` — **S3** + **CloudFront (OAC)** + optional **Route 53** alias for a custom hostname. No compute in this stack.

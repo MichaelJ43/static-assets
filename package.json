@@ -16,7 +16,8 @@
     "./m43-tokens.css": "./dist/v1/m43-tokens.css",
     "./m43-shell.css": "./dist/v1/m43-shell.css",
     "./m43-primitives.css": "./dist/v1/m43-primitives.css",
-    "./m43-analytics.js": "./dist/v1/m43-analytics.js"
+    "./m43-analytics.js": "./dist/v1/m43-analytics.js",
+    "./m43-auth-header.js": "./dist/v1/m43-auth-header.js"
   },
   "scripts": {
     "build": "node scripts/build.mjs",
