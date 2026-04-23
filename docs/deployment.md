@@ -58,3 +58,19 @@ For npm-based apps, add the package dependency and `import` the CSS from the `ex
 ## npm publishing
 
 Publishing the package to the npm registry is **not** automated in the default workflow. If you add it, use a `release` workflow with `NPM_TOKEN` and `npm publish` only from tagged versions.
+
+## Troubleshooting (Terraform)
+
+### `OriginAccessControlAlreadyExists` (HTTP 409)
+
+CloudFront OAC **names are unique per AWS account**. A fixed name like `static-assets-prod-oac` can collide if an OAC with that name already exists (e.g. a **partial apply** that wrote the OAC in AWS but did not record it in state, or a **re-run** with an empty or wrong state). This repo’s Terraform now uses a **per-stack suffix** on the OAC name (same `random_id` as the S3 bucket) so a fresh apply can create a new OAC without a name collision.
+
+**Orphans:** an old, unused OAC in the account can be deleted in the **CloudFront** console (Origin access) to reduce clutter; it does not accrue much cost.
+
+### “Plan: N to add” on every run / duplicate S3 buckets
+
+If **terraform plan** always wants to **create** the whole stack, the **remote state** in `TF_STATE_BUCKET` is not the one Terraform is reading (wrong key, region, or bucket) or the state was reset. **Do not** re-run `apply` repeatedly with empty state, or you will create duplicate S3 buckets and hit other unique-name conflicts. Fix backend configuration and, if needed, `terraform import` or remove stray resources in AWS to match a single state file.
+
+### Stale partial state
+
+If a run failed after creating the bucket but before CloudFront, the next `apply` will continue from state. If state and AWS disagree, use `terraform plan -refresh-only` and fix drift with import or `terraform apply`’s replace guidance.

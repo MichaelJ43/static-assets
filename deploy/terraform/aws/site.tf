@@ -24,8 +24,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "site" {
   }
 }
 
+# Name must be unique per account. A fixed "${local.name}-oac" can collide with an OAC
+# left from a prior partial apply or a lost state; include random_id like the S3 bucket.
 resource "aws_cloudfront_origin_access_control" "site" {
-  name                              = "${local.name}-oac"
+  name                              = "${local.name}-oac-${random_id.suffix.hex}"
   description                       = "OAC for ${aws_s3_bucket.site.bucket}"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
