@@ -16,19 +16,35 @@ function getLoaderScript(): HTMLScriptElement | null {
   return document.querySelector('script[data-m43-auth]')
 }
 
+function readTopBarInFlow(el: HTMLScriptElement | null): boolean {
+  if (!el) {
+    return false
+  }
+  const v = el.getAttribute('data-m43-auth-in-flow')
+  return v === 'true' || v === '1' || v === ''
+}
+
 function readConfig(el: HTMLScriptElement | null): {
   apiBase: string
   authOrigin: string
   homeUrl: string
+  topBarInFlow: boolean
   mount: HTMLElement | null
 } {
   if (!el?.dataset) {
-    return { apiBase: DEFAULT_API_BASE, authOrigin: DEFAULT_AUTH_ORIGIN, homeUrl: DEFAULT_HOME_URL, mount: null }
+    return {
+      apiBase: DEFAULT_API_BASE,
+      authOrigin: DEFAULT_AUTH_ORIGIN,
+      homeUrl: DEFAULT_HOME_URL,
+      topBarInFlow: false,
+      mount: null,
+    }
   }
   const d = el.dataset
   const apiBase = normalizeBaseUrl(d.m43Api ?? DEFAULT_API_BASE, DEFAULT_API_BASE)
   const authOrigin = (d.m43AuthOrigin ?? DEFAULT_AUTH_ORIGIN).trim() || DEFAULT_AUTH_ORIGIN
   const homeUrl = (d.m43HomeUrl ?? '').trim() || DEFAULT_HOME_URL
+  const topBarInFlow = readTopBarInFlow(el)
   const sel = (d.m43AuthMount ?? '').trim()
   let mount: HTMLElement | null = null
   if (sel) {
@@ -41,7 +57,21 @@ function readConfig(el: HTMLScriptElement | null): {
   if (!mount) {
     mount = document.querySelector('[data-m43-auth-header]') as HTMLElement | null
   }
-  return { apiBase, authOrigin, homeUrl, mount }
+  return { apiBase, authOrigin, homeUrl, topBarInFlow, mount }
+}
+
+/**
+ * Reserves vertical space under a fixed top bar so in-flow content is not covered.
+ */
+function attachFixedTopBarInset(bar: HTMLElement): void {
+  const root = document.documentElement
+  const sync = (): void => {
+    const h = Math.ceil(bar.getBoundingClientRect().height)
+    root.style.setProperty('--m43-top-bar-inset', `${h}px`)
+  }
+  sync()
+  const ro = new ResizeObserver(sync)
+  ro.observe(bar)
 }
 
 /**
@@ -52,7 +82,7 @@ export async function initM43AuthHeader(): Promise<void> {
     return
   }
   const el = getLoaderScript()
-  const { apiBase, authOrigin, homeUrl, mount } = readConfig(el)
+  const { apiBase, authOrigin, homeUrl, topBarInFlow, mount } = readConfig(el)
   if (!mount) {
     // eslint-disable-next-line no-console
     console.warn(
@@ -75,7 +105,14 @@ export async function initM43AuthHeader(): Promise<void> {
     })()
   }
 
-  renderAuthHeader(mount, me, signInUrl, onSignOut, { homeUrl })
+  const layout = topBarInFlow ? 'in-flow' : 'fixed'
+  renderAuthHeader(mount, me, signInUrl, onSignOut, { homeUrl, layout })
+
+  if (layout === 'fixed') {
+    attachFixedTopBarInset(mount)
+  } else {
+    document.documentElement.style.removeProperty('--m43-top-bar-inset')
+  }
 }
 
 void initM43AuthHeader()

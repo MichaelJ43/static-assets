@@ -26,10 +26,10 @@ If you need **legacy** browsers, retest in your app; m43 does not target Interne
 ## 1. What you get
 
 1. **Tokens** (`m43-tokens.css`) — `:root` custom properties (`--m43-*`), light/dark via `prefers-color-scheme`, base typography and links when the page uses a `.m43` wrapper or `body.m43`.
-2. **Shell** (`m43-shell.css`) — **site shell** layout: optional full-width **`m43-top-bar`** (from `m43-auth-header.js`), `m43-site-header`, `m43-site-footer`, `m43-main`, `m43-nav`, `m43-page`. Use the **`m43-` classes**; they do not require renaming existing app-specific BEM, but the **visual** shell should use these for consistency.
+2. **Shell** (`m43-shell.css`) — **site shell** layout: optional **viewport-fixed** full-bleed **`m43-top-bar`** (from `m43-auth-header.js`), `m43-site-header`, `m43-site-footer`, `m43-main`, `m43-nav`, `m43-page` (uses **`--m43-top-bar-inset`** padding so content clears the bar). Use the **`m43-` classes**; they do not require renaming existing app-specific BEM, but the **visual** shell should use these for consistency.
 3. **Primitives** (`m43-primitives.css`) — buttons, labeled fields, error line, data tables, cards (including a narrow “auth card” style).
 4. **Analytics** (`m43-analytics.js`) — optional, small script: sends `pageview` events to `POST {api}/analytics/events?v=1` with a stable `appId` per product. **No cookies;** CORS on the API must allow your page origin.
-5. **Auth top bar** (`m43-auth-header.js`) — optional: full-width bar (logo placeholder, optional **Home** to your site root, **Log In** via the auth SPA with `returnUrl` set to the **current page**, or a **profile initial** and dropdown **Sign out** when `GET {api}/v1/auth/me` succeeds with the `sap_session` cookie). Matches **shared-api-platform** ([`auth-spa` query + login `returnUrl`](https://github.com/MichaelJ43/shared-api-platform/blob/main/auth-spa/src/main.ts), session cookie on the apex per [auth-and-dashboard](https://github.com/MichaelJ43/shared-api-platform/blob/main/docs/auth-and-dashboard.md)).
+5. **Auth top bar** (`m43-auth-header.js`) — optional: **fixed** full-width strip (logo placeholder, optional **Home**, **Log In** with `returnUrl`, or **profile initial** + **Sign out** when `GET {api}/v1/auth/me` succeeds). The script measures the bar and sets **`--m43-top-bar-inset`** on `<html>` so **`m43-page`** padding keeps titles and main content below the strip while scrolling. Matches **shared-api-platform** ([`auth-spa` query + login `returnUrl`](https://github.com/MichaelJ43/shared-api-platform/blob/main/auth-spa/src/main.ts), session cookie on the apex per [auth-and-dashboard](https://github.com/MichaelJ43/shared-api-platform/blob/main/docs/auth-and-dashboard.md)).
 
 **Load order (CSS):** always **tokens → shell → primitives** (and after that, the app’s own CSS for product-specific layout).
 
@@ -74,18 +74,20 @@ Add before `</head>` (CSS) and before `</body>` (script):
 
 **Auth top bar (`m43-auth-header.js`, optional, requires HTTPS page + shared-api-platform CORS and cookies on your apex):**
 
-1. At the **top of the page body** (first inside `.m43-page__body` or equivalent, **not** inside a max-width header), add an **empty** placeholder the script will fill. It becomes a full-width **`m43-top-bar`** (logo, optional Home link, Log In / profile menu):
+1. Put the mount as the **first meaningful child of `<body>`** (immediately under `<body class="m43 m43-page">`), **before** `.m43-page__body` / your app shell — **not** inside a max-width header — so the bar is **viewport edge–to–edge** and not clipped by transformed ancestors. The script fills it with a fixed **`m43-top-bar`** (logo, optional Home, Log In / profile menu):
 
 ```html
-<div class="m43-page__body m43">
+<body class="m43 m43-page">
   <div data-m43-auth-header></div>
-  <header class="m43-site-header">
-    <h1>Your app</h1>
-    <p class="m43-intro">…</p>
-    <nav class="m43-nav">…</nav>
-  </header>
-  <main class="m43-main">…</main>
-</div>
+  <div class="m43-page__body m43">
+    <header class="m43-site-header">
+      <h1>Your app</h1>
+      <p class="m43-intro">…</p>
+      <nav class="m43-nav">…</nav>
+    </header>
+    <main class="m43-main">…</main>
+  </div>
+</body>
 ```
 
    **Home link:** shown on every origin/path **except** when the current URL matches **`data-m43-home-url`** (default `https://michaelj43.dev/` — same origin and path as that URL, including `/` or `/index.html`). Subdomains (e.g. `static.*`) always see Home.
@@ -107,6 +109,7 @@ Add before `</head>` (CSS) and before `</body>` (script):
 - `data-m43-api` (optional) — API base; default `https://api.michaelj43.dev` (trailing slash stripped).
 - `data-m43-auth-origin` (optional) — sign-in page origin; default `https://auth.michaelj43.dev`. The script sends users to `…?returnUrl=<encodeURIComponent(current page URL)>`, which the [auth SPA](https://github.com/MichaelJ43/shared-api-platform/blob/main/auth-spa/src/main.ts) passes through to `POST /v1/auth/login` as `returnUrl` (server allow-listed per [returnUrl](https://github.com/MichaelJ43/shared-api-platform/blob/main/lambda/src/returnUrl.ts)).
 - `data-m43-home-url` (optional) — URL used for the **Home** button and to decide when to hide it on the “root” page; default `https://michaelj43.dev/`.
+- `data-m43-auth-in-flow` (optional) — set to `true` or `1` to restore **in-document** bar (scrolls with the page) instead of the default **fixed** strip; omits `--m43-top-bar-inset` updates.
 - **Alternate mount** — if you cannot use `data-m43-auth-header`, set e.g. `data-m43-auth-mount="#x"` on the script and put `id="x"` on your container element.
 
 `returnUrl` must be **https** to be accepted after login. Local **http** dev may fall back to `AUTH_DEFAULT_APP_URL` in the API.
@@ -134,8 +137,8 @@ import '@michaelj43/static-assets/m43-primitives.css'
 
 ## 3. Markup patterns (minimal)
 
-- **Page wrapper** — e.g. `<div class="m43 m43-page">` or `body class="m43"`.
-- **Optional auth bar** — empty `<div data-m43-auth-header></div>` at the top of `.m43-page__body` (see §2 CDN auth top bar).
+- **Page wrapper** — e.g. `<div class="m43 m43-page">` or `body class="m43 m43-page"`.
+- **Optional auth bar** — empty `<div data-m43-auth-header></div>` as the **first child of `body`** (see §2 CDN auth top bar).
 - **Header** — `class="m43-site-header"`; title in `<h1>`, intro in `.m43-intro`, nav links in `nav` with `class="m43-nav"`.
 - **Main** — `class="m43-main"` (or `main` with that class).
 - **Footer** — `class="m43-site-footer"`.
@@ -188,7 +191,7 @@ Implement the m43 design system in this project.
    - data-m43-api="https://api.michaelj43.dev" if not default
    - data-m43-spa="true" only if this is a client-side–routed SPA
 
-4b. (Optional) Add `m43-auth-header.js` with `data-m43-auth`, a `data-m43-auth-header` mount at the **top** of the page body (full-width bar), and the same `data-m43-api` / `data-m43-auth-origin` as other apps on `*.michaelj43.dev` so Log In includes `returnUrl` and session cookies apply.
+4b. (Optional) Add `m43-auth-header.js` with `data-m43-auth`, a `data-m43-auth-header` mount as the **first child of `body`** (viewport-fixed strip), and the same `data-m43-api` / `data-m43-auth-origin` as other apps on `*.michaelj43.dev` so Log In includes `returnUrl` and session cookies apply.
 
 5. Do not remove working product features; only align the **site shell** and shared UI. If something conflicts, keep the product behavior and leave a short comment.
 

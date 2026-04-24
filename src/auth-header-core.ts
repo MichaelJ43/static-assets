@@ -132,6 +132,11 @@ export type AuthHeaderRenderOptions = {
   homeUrl?: string
   /** Current page URL for Home visibility; defaults to `location.href` in the browser. */
   pageHref?: string
+  /**
+   * `fixed` (default): viewport-pinned bar; host should load `m43-shell.css` and place the mount early in `body`.
+   * `in-flow`: legacy scroll-with-page bar inside normal layout.
+   */
+  layout?: 'fixed' | 'in-flow'
 }
 
 /**
@@ -146,6 +151,12 @@ export function renderAuthHeader(
   options?: AuthHeaderRenderOptions,
 ): void {
   mount.classList.add('m43-top-bar')
+  const layout = options?.layout ?? 'fixed'
+  if (layout === 'in-flow') {
+    mount.classList.add('m43-top-bar--in-flow')
+  } else {
+    mount.classList.remove('m43-top-bar--in-flow')
+  }
   mount.innerHTML = ''
 
   const homeUrl = (options?.homeUrl ?? DEFAULT_HOME_URL).trim() || DEFAULT_HOME_URL

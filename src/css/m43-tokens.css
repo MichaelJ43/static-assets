@@ -4,6 +4,8 @@
  */
 :root {
   color-scheme: light dark;
+  /* Overridden by m43-auth-header.js for a fixed top bar (`.m43-page` padding clears content below it). */
+  --m43-top-bar-inset: 0px;
   --m43-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --m43-font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
   --m43-bg: #0f1218;
