@@ -9,6 +9,8 @@ export const DEFAULT_AUTH_ORIGIN = 'https://auth.michaelj43.dev'
 export const DEFAULT_HOME_URL = 'https://michaelj43.dev/'
 /** Portfolio navigation index opened by the top-bar mark button. */
 export const DEFAULT_NAV_URL = 'https://michaelj43.dev/navigation/'
+/** YAML-generated navigation data used by the top-bar dropdown. */
+export const DEFAULT_NAV_DATA_URL = 'https://michaelj43.dev/navigation.json'
 
 function dlog(msg: string, ...args: unknown[]): void {
   try {
@@ -30,6 +32,65 @@ export function normalizeNavigationUrl(raw: string | undefined, fallback: string
   try {
     return new URL(t).href
   } catch {
+    return fallback
+  }
+}
+
+export type NavigationMenuItem = {
+  title: string
+  url: string
+  description?: string
+  note?: string
+}
+
+export function fallbackNavigationItems(navUrl: string = DEFAULT_NAV_URL): NavigationMenuItem[] {
+  return [
+    {
+      title: 'All pages',
+      url: normalizeNavigationUrl(navUrl),
+      description: 'Open the full navigation page.',
+    },
+  ]
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+export async function fetchNavigationItems(
+  navDataUrl: string,
+  navUrl: string = DEFAULT_NAV_URL,
+  fetchImpl: typeof fetch = fetch,
+): Promise<NavigationMenuItem[]> {
+  const fallback = fallbackNavigationItems(navUrl)
+  try {
+    const r = await fetchImpl(normalizeNavigationUrl(navDataUrl, DEFAULT_NAV_DATA_URL), {
+      credentials: 'omit',
+      method: 'GET',
+    })
+    if (!r.ok) {
+      return fallback
+    }
+    const body = (await r.json()) as unknown
+    if (!isRecord(body) || !Array.isArray(body.items)) {
+      return fallback
+    }
+    const items = body.items.flatMap((item): NavigationMenuItem[] => {
+      if (!isRecord(item) || typeof item.title !== 'string' || typeof item.url !== 'string') {
+        return []
+      }
+      return [
+        {
+          title: item.title,
+          url: normalizeNavigationUrl(item.url, navUrl),
+          description: typeof item.description === 'string' ? item.description : undefined,
+          note: typeof item.note === 'string' ? item.note : undefined,
+        },
+      ]
+    })
+    return items.length > 0 ? items : fallback
+  } catch (e) {
+    dlog('navigation fetch error', e)
     return fallback
   }
 }
@@ -143,6 +204,8 @@ export type AuthHeaderRenderOptions = {
   homeUrl?: string
   /** Defaults to {@link DEFAULT_NAV_URL}. */
   navUrl?: string
+  /** Items shown in the top-bar mark dropdown. */
+  navItems?: NavigationMenuItem[]
   /** Current page URL for Home visibility; defaults to `location.href` in the browser. */
   pageHref?: string
   /**
@@ -174,6 +237,7 @@ export function renderAuthHeader(
 
   const homeUrl = (options?.homeUrl ?? DEFAULT_HOME_URL).trim() || DEFAULT_HOME_URL
   const navUrl = normalizeNavigationUrl(options?.navUrl)
+  const navItems = options?.navItems?.length ? options.navItems : fallbackNavigationItems(navUrl)
   const pageHref =
     options?.pageHref ??
     (typeof location !== 'undefined' ? location.href : 'https://example.com/sub/page')
@@ -182,20 +246,89 @@ export function renderAuthHeader(
   const inner = document.createElement('div')
   inner.className = 'm43-top-bar__inner'
 
+  const navWrap = document.createElement('div')
+  navWrap.className = 'm43-nav-menu'
+
   const navButton = document.createElement('button')
   navButton.type = 'button'
   navButton.className = 'm43-top-bar__logo-button'
+  navButton.setAttribute('aria-haspopup', 'true')
+  navButton.setAttribute('aria-expanded', 'false')
   navButton.setAttribute('aria-label', 'Open site navigation')
   navButton.title = 'Navigation'
-  navButton.addEventListener('click', () => {
-    location.href = navUrl
-  })
 
   const logoMark = document.createElement('span')
   logoMark.className = 'm43-top-bar__logo-mark'
   logoMark.setAttribute('aria-hidden', 'true')
   navButton.appendChild(logoMark)
-  inner.appendChild(navButton)
+
+  const navMenu = document.createElement('ul')
+  navMenu.className = 'm43-auth-user__menu m43-nav-menu__menu'
+  navMenu.setAttribute('role', 'menu')
+  navMenu.hidden = true
+
+  navItems.forEach((item) => {
+    const li = document.createElement('li')
+    li.setAttribute('role', 'none')
+    const a = document.createElement('a')
+    a.className = 'm43-auth-user__item m43-nav-menu__item'
+    a.setAttribute('role', 'menuitem')
+    a.href = item.url
+    const label = document.createElement('span')
+    label.className = 'm43-nav-menu__label'
+    label.textContent = item.title
+    a.appendChild(label)
+    if (item.note) {
+      const note = document.createElement('span')
+      note.className = 'm43-nav-menu__note'
+      note.textContent = item.note
+      a.appendChild(note)
+    }
+    li.appendChild(a)
+    navMenu.appendChild(li)
+  })
+
+  function closeNavMenu(): void {
+    navMenu.hidden = true
+    navButton.setAttribute('aria-expanded', 'false')
+  }
+
+  function openNavMenu(): void {
+    navMenu.hidden = false
+    navButton.setAttribute('aria-expanded', 'true')
+  }
+
+  function toggleNavMenu(): void {
+    if (navMenu.hidden) {
+      openNavMenu()
+    } else {
+      closeNavMenu()
+    }
+  }
+
+  navButton.addEventListener('click', (e) => {
+    e.stopPropagation()
+    toggleNavMenu()
+  })
+
+  const onNavDocDown = (e: MouseEvent): void => {
+    if (navWrap.contains(e.target as Node)) {
+      return
+    }
+    closeNavMenu()
+  }
+  document.addEventListener('mousedown', onNavDocDown)
+
+  navButton.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeNavMenu()
+      navButton.focus()
+    }
+  })
+
+  navWrap.appendChild(navButton)
+  navWrap.appendChild(navMenu)
+  inner.appendChild(navWrap)
 
   if (showHome) {
     const home = document.createElement('a')

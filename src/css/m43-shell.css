@@ -135,6 +135,32 @@ main.m43-main {
   opacity: 0.9;
 }
 
+.m43-nav-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.m43-nav-menu__menu {
+  left: 0;
+  right: auto;
+  min-width: 13rem;
+}
+
+.m43-nav-menu__item {
+  text-decoration: none;
+}
+
+.m43-nav-menu__label,
+.m43-nav-menu__note {
+  display: block;
+}
+
+.m43-nav-menu__note {
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--m43-muted);
+}
+
 .m43-top-bar__home {
   flex-shrink: 0;
 }
