@@ -66,6 +66,8 @@ main.m43-main {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* Space for viewport-fixed .m43-top-bar (inset set by m43-auth-header.js). */
+  padding-top: var(--m43-top-bar-inset);
 }
 
 .m43-page__body {
@@ -74,9 +76,24 @@ main.m43-main {
 
 /* Full-width top bar: logo, optional Home, shared-api-platform auth (see m43-auth-header.js) */
 .m43-top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
+  max-width: none;
+  z-index: 200;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
   background: var(--m43-surface);
   border-bottom: 1px solid var(--m43-border);
+}
+
+/* Opt-out: scroll with page (data-m43-auth-in-flow on the loader script). */
+.m43-top-bar.m43-top-bar--in-flow {
+  position: static;
+  padding-top: 0;
+  z-index: auto;
 }
 
 .m43-top-bar__inner {
