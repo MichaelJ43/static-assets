@@ -1,6 +1,7 @@
 import {
   DEFAULT_API_BASE,
   DEFAULT_AUTH_ORIGIN,
+  DEFAULT_HOME_URL,
   buildSignInUrl,
   fetchMe,
   normalizeBaseUrl,
@@ -15,13 +16,19 @@ function getLoaderScript(): HTMLScriptElement | null {
   return document.querySelector('script[data-m43-auth]')
 }
 
-function readConfig(el: HTMLScriptElement | null): { apiBase: string; authOrigin: string; mount: HTMLElement | null } {
+function readConfig(el: HTMLScriptElement | null): {
+  apiBase: string
+  authOrigin: string
+  homeUrl: string
+  mount: HTMLElement | null
+} {
   if (!el?.dataset) {
-    return { apiBase: DEFAULT_API_BASE, authOrigin: DEFAULT_AUTH_ORIGIN, mount: null }
+    return { apiBase: DEFAULT_API_BASE, authOrigin: DEFAULT_AUTH_ORIGIN, homeUrl: DEFAULT_HOME_URL, mount: null }
   }
   const d = el.dataset
   const apiBase = normalizeBaseUrl(d.m43Api ?? DEFAULT_API_BASE, DEFAULT_API_BASE)
   const authOrigin = (d.m43AuthOrigin ?? DEFAULT_AUTH_ORIGIN).trim() || DEFAULT_AUTH_ORIGIN
+  const homeUrl = (d.m43HomeUrl ?? '').trim() || DEFAULT_HOME_URL
   const sel = (d.m43AuthMount ?? '').trim()
   let mount: HTMLElement | null = null
   if (sel) {
@@ -34,7 +41,7 @@ function readConfig(el: HTMLScriptElement | null): { apiBase: string; authOrigin
   if (!mount) {
     mount = document.querySelector('[data-m43-auth-header]') as HTMLElement | null
   }
-  return { apiBase, authOrigin, mount }
+  return { apiBase, authOrigin, homeUrl, mount }
 }
 
 /**
@@ -45,7 +52,7 @@ export async function initM43AuthHeader(): Promise<void> {
     return
   }
   const el = getLoaderScript()
-  const { apiBase, authOrigin, mount } = readConfig(el)
+  const { apiBase, authOrigin, homeUrl, mount } = readConfig(el)
   if (!mount) {
     // eslint-disable-next-line no-console
     console.warn(
@@ -68,7 +75,7 @@ export async function initM43AuthHeader(): Promise<void> {
     })()
   }
 
-  renderAuthHeader(mount, me, signInUrl, onSignOut)
+  renderAuthHeader(mount, me, signInUrl, onSignOut, { homeUrl })
 }
 
 void initM43AuthHeader()

@@ -5,6 +5,8 @@
 
 export const DEFAULT_API_BASE = 'https://api.michaelj43.dev'
 export const DEFAULT_AUTH_ORIGIN = 'https://auth.michaelj43.dev'
+/** Portfolio / site root used for the optional “Home” control (hide on that URL). */
+export const DEFAULT_HOME_URL = 'https://michaelj43.dev/'
 
 function dlog(msg: string, ...args: unknown[]): void {
   try {
@@ -81,42 +83,120 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;')
 }
 
-function truncateEmail(email: string, max: number): string {
-  if (email.length <= max) {
-    return email
+/**
+ * Normalizes pathname for comparing “site root” vs inner pages (trailing slashes, /index.html).
+ */
+function normalizedSitePath(pathname: string): string {
+  let p = pathname.replace(/\/+$/, '') || '/'
+  if (p.toLowerCase() === '/index.html') {
+    p = '/'
   }
-  return `${email.slice(0, max - 1)}…`
+  return p
 }
 
-const USER_ICON_SVG = `<svg class="m43-auth-user__icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`
+/**
+ * When `false`, the optional Home link is hidden (same origin+path as `homeHref`).
+ * On any other origin (e.g. static.*) or non-root path on the home origin, returns `true`.
+ */
+export function shouldShowHomeLink(pageHref: string, homeHref: string = DEFAULT_HOME_URL): boolean {
+  let page: URL
+  let home: URL
+  try {
+    page = new URL(pageHref)
+    home = new URL(homeHref)
+  } catch {
+    return true
+  }
+  if (page.origin !== home.origin) {
+    return true
+  }
+  return normalizedSitePath(page.pathname) !== normalizedSitePath(home.pathname)
+}
+
+/** First letter of the local part of the email for an avatar initial (ASCII fallback). */
+export function initialFromEmail(email: string): string {
+  const local = email.split('@')[0]?.trim() ?? ''
+  const m = local.match(/[a-z0-9]/i)
+  if (m) {
+    return m[0].toUpperCase()
+  }
+  const head = email.trim()[0]
+  if (head && /[a-z0-9]/i.test(head)) {
+    return head.toUpperCase()
+  }
+  return '?'
+}
+
+export type AuthHeaderRenderOptions = {
+  /** Defaults to {@link DEFAULT_HOME_URL}. */
+  homeUrl?: string
+  /** Current page URL for Home visibility; defaults to `location.href` in the browser. */
+  pageHref?: string
+}
 
 /**
- * Renders sign-in or user menu into `mount` (replaces content).
+ * Renders a full-width top bar (logo, optional Home, shared-api-platform Log In / profile menu).
+ * Replaces `mount`’s children; adds `m43-top-bar` on `mount`.
  */
 export function renderAuthHeader(
   mount: HTMLElement,
   me: MeResult,
   signInUrl: string,
   onSignOut: () => void,
+  options?: AuthHeaderRenderOptions,
 ): void {
-  mount.classList.add('m43-auth-header')
+  mount.classList.add('m43-top-bar')
   mount.innerHTML = ''
 
+  const homeUrl = (options?.homeUrl ?? DEFAULT_HOME_URL).trim() || DEFAULT_HOME_URL
+  const pageHref =
+    options?.pageHref ??
+    (typeof location !== 'undefined' ? location.href : 'https://example.com/sub/page')
+  const showHome = shouldShowHomeLink(pageHref, homeUrl)
+
+  const inner = document.createElement('div')
+  inner.className = 'm43-top-bar__inner'
+
+  const logoMark = document.createElement('span')
+  logoMark.className = 'm43-top-bar__logo-mark'
+  logoMark.setAttribute('aria-hidden', 'true')
+  inner.appendChild(logoMark)
+
+  if (showHome) {
+    const home = document.createElement('a')
+    home.className = 'm43-button m43-top-bar__home'
+    try {
+      home.href = new URL(homeUrl).href
+    } catch {
+      home.href = DEFAULT_HOME_URL
+    }
+    home.textContent = 'Home'
+    inner.appendChild(home)
+  }
+
+  const spacer = document.createElement('span')
+  spacer.className = 'm43-top-bar__spacer'
+  spacer.setAttribute('aria-hidden', 'true')
+  inner.appendChild(spacer)
+
+  const auth = document.createElement('div')
+  auth.className = 'm43-auth-header'
+
   if (me.ok) {
-    mount.classList.remove('m43-auth-header--signed-out')
-    mount.classList.add('m43-auth-header--signed-in')
-    const label = truncateEmail(me.email, 32)
+    auth.classList.remove('m43-auth-header--signed-out')
+    auth.classList.add('m43-auth-header--signed-in')
+    const initial = escapeHtml(initialFromEmail(me.email))
 
     const wrap = document.createElement('div')
     wrap.className = 'm43-auth-user'
 
     const btn = document.createElement('button')
     btn.type = 'button'
-    btn.className = 'm43-auth-user__trigger'
+    btn.className = 'm43-auth-user__trigger m43-auth-user__trigger--avatar'
     btn.setAttribute('aria-haspopup', 'true')
     btn.setAttribute('aria-expanded', 'false')
     btn.setAttribute('aria-label', `Account: ${me.email}. Open menu.`)
-    btn.innerHTML = `${USER_ICON_SVG}<span class="m43-auth-user__label">${escapeHtml(label)}</span>`
+    btn.innerHTML = `<span class="m43-auth-user__initial">${initial}</span>`
 
     const menu = document.createElement('ul')
     menu.className = 'm43-auth-user__menu'
@@ -174,16 +254,17 @@ export function renderAuthHeader(
 
     wrap.appendChild(btn)
     wrap.appendChild(menu)
-    mount.appendChild(wrap)
-
-    return
+    auth.appendChild(wrap)
+  } else {
+    auth.classList.remove('m43-auth-header--signed-in')
+    auth.classList.add('m43-auth-header--signed-out')
+    const a = document.createElement('a')
+    a.className = 'm43-button m43-button--primary m43-auth-signin'
+    a.href = signInUrl
+    a.textContent = 'Log In'
+    auth.appendChild(a)
   }
 
-  mount.classList.remove('m43-auth-header--signed-in')
-  mount.classList.add('m43-auth-header--signed-out')
-  const a = document.createElement('a')
-  a.className = 'm43-button m43-button--primary m43-auth-signin'
-  a.href = signInUrl
-  a.textContent = 'Sign in'
-  mount.appendChild(a)
+  inner.appendChild(auth)
+  mount.appendChild(inner)
 }

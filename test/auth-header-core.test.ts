@@ -4,6 +4,9 @@ import {
   normalizeBaseUrl,
   DEFAULT_API_BASE,
   DEFAULT_AUTH_ORIGIN,
+  DEFAULT_HOME_URL,
+  initialFromEmail,
+  shouldShowHomeLink,
 } from '../src/auth-header-core'
 
 describe('normalizeBaseUrl', () => {
@@ -41,5 +44,45 @@ describe('DEFAULT_AUTH_ORIGIN', () => {
 describe('DEFAULT_API_BASE', () => {
   it('matches shared API default', () => {
     expect(DEFAULT_API_BASE).toBe('https://api.michaelj43.dev')
+  })
+})
+
+describe('DEFAULT_HOME_URL', () => {
+  it('is the portfolio apex root', () => {
+    expect(DEFAULT_HOME_URL).toBe('https://michaelj43.dev/')
+  })
+})
+
+describe('shouldShowHomeLink', () => {
+  const home = 'https://michaelj43.dev/'
+
+  it('hides on apex root', () => {
+    expect(shouldShowHomeLink('https://michaelj43.dev/', home)).toBe(false)
+    expect(shouldShowHomeLink('https://michaelj43.dev', home)).toBe(false)
+  })
+
+  it('hides on /index.html at apex', () => {
+    expect(shouldShowHomeLink('https://michaelj43.dev/index.html', home)).toBe(false)
+  })
+
+  it('shows on inner paths at apex', () => {
+    expect(shouldShowHomeLink('https://michaelj43.dev/projects', home)).toBe(true)
+  })
+
+  it('shows on other subdomains', () => {
+    expect(shouldShowHomeLink('https://static.michaelj43.dev/', home)).toBe(true)
+    expect(shouldShowHomeLink('https://static.michaelj43.dev/v1/', home)).toBe(true)
+  })
+})
+
+describe('initialFromEmail', () => {
+  it('uses first alphanumeric of local part', () => {
+    expect(initialFromEmail('foo@example.com')).toBe('F')
+    expect(initialFromEmail('Michael@example.com')).toBe('M')
+  })
+
+  it('falls back to ? when no suitable character', () => {
+    expect(initialFromEmail('@example.com')).toBe('?')
+    expect(initialFromEmail('')).toBe('?')
   })
 })
