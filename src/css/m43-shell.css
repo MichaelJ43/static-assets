@@ -72,7 +72,44 @@ main.m43-main {
   flex: 1;
 }
 
-/* Optional top row: title + shared-api-platform auth (see m43-auth-header.js) */
+/* Full-width top bar: logo, optional Home, shared-api-platform auth (see m43-auth-header.js) */
+.m43-top-bar {
+  width: 100%;
+  background: var(--m43-surface);
+  border-bottom: 1px solid var(--m43-border);
+}
+
+.m43-top-bar__inner {
+  box-sizing: border-box;
+  max-width: var(--m43-content-max);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  padding: 0.65rem 1.25rem;
+}
+
+.m43-top-bar__logo-mark {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: var(--m43-radius-sm);
+  background: var(--m43-accent);
+  opacity: 0.9;
+}
+
+.m43-top-bar__home {
+  flex-shrink: 0;
+}
+
+.m43-top-bar__spacer {
+  flex: 1;
+  min-width: 0.5rem;
+}
+
+/* Optional top row: title + legacy placement (prefer top bar above) */
 .m43-site-header__row {
   display: flex;
   flex-wrap: wrap;
@@ -97,7 +134,12 @@ main.m43-main {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-height: 2.5rem;
+  min-height: 2.25rem;
+  flex-shrink: 0;
+}
+
+.m43-top-bar .m43-auth-header {
+  min-width: 0;
 }
 
 .m43-auth-header .m43-button:focus-visible,
@@ -127,18 +169,30 @@ main.m43-main {
   text-align: left;
 }
 
-.m43-auth-user__icon {
-  flex-shrink: 0;
-  display: block;
-  opacity: 0.9;
-}
-
 .m43-auth-user__label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.9rem;
   color: var(--m43-muted);
+}
+
+.m43-auth-user__trigger--avatar {
+  max-width: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+.m43-auth-user__initial {
+  line-height: 1;
+  color: var(--m43-text);
 }
 
 .m43-auth-user__menu {
