@@ -7,6 +7,8 @@ export const DEFAULT_API_BASE = 'https://api.michaelj43.dev'
 export const DEFAULT_AUTH_ORIGIN = 'https://auth.michaelj43.dev'
 /** Portfolio / site root used for the optional “Home” control (hide on that URL). */
 export const DEFAULT_HOME_URL = 'https://michaelj43.dev/'
+/** Portfolio navigation index opened by the top-bar mark button. */
+export const DEFAULT_NAV_URL = 'https://michaelj43.dev/navigation/'
 
 function dlog(msg: string, ...args: unknown[]): void {
   try {
@@ -21,6 +23,15 @@ function dlog(msg: string, ...args: unknown[]): void {
 export function normalizeBaseUrl(raw: string, fallback: string): string {
   const t = raw.trim() || fallback
   return t.replace(/\/$/, '') || fallback
+}
+
+export function normalizeNavigationUrl(raw: string | undefined, fallback: string = DEFAULT_NAV_URL): string {
+  const t = raw?.trim() || fallback
+  try {
+    return new URL(t).href
+  } catch {
+    return fallback
+  }
 }
 
 /**
@@ -130,6 +141,8 @@ export function initialFromEmail(email: string): string {
 export type AuthHeaderRenderOptions = {
   /** Defaults to {@link DEFAULT_HOME_URL}. */
   homeUrl?: string
+  /** Defaults to {@link DEFAULT_NAV_URL}. */
+  navUrl?: string
   /** Current page URL for Home visibility; defaults to `location.href` in the browser. */
   pageHref?: string
   /**
@@ -160,6 +173,7 @@ export function renderAuthHeader(
   mount.innerHTML = ''
 
   const homeUrl = (options?.homeUrl ?? DEFAULT_HOME_URL).trim() || DEFAULT_HOME_URL
+  const navUrl = normalizeNavigationUrl(options?.navUrl)
   const pageHref =
     options?.pageHref ??
     (typeof location !== 'undefined' ? location.href : 'https://example.com/sub/page')
@@ -168,10 +182,20 @@ export function renderAuthHeader(
   const inner = document.createElement('div')
   inner.className = 'm43-top-bar__inner'
 
+  const navButton = document.createElement('button')
+  navButton.type = 'button'
+  navButton.className = 'm43-top-bar__logo-button'
+  navButton.setAttribute('aria-label', 'Open site navigation')
+  navButton.title = 'Navigation'
+  navButton.addEventListener('click', () => {
+    location.href = navUrl
+  })
+
   const logoMark = document.createElement('span')
   logoMark.className = 'm43-top-bar__logo-mark'
   logoMark.setAttribute('aria-hidden', 'true')
-  inner.appendChild(logoMark)
+  navButton.appendChild(logoMark)
+  inner.appendChild(navButton)
 
   if (showHome) {
     const home = document.createElement('a')
