@@ -107,12 +107,30 @@ main.m43-main {
   padding: 0.65rem 1.25rem;
 }
 
-.m43-top-bar__logo-mark {
-  display: block;
+.m43-top-bar__logo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 2rem;
   height: 2rem;
   flex-shrink: 0;
+  padding: 0;
+  border: none;
   border-radius: var(--m43-radius-sm);
+  background: transparent;
+  cursor: pointer;
+}
+
+.m43-top-bar__logo-button:hover .m43-top-bar__logo-mark,
+.m43-top-bar__logo-button:focus-visible .m43-top-bar__logo-mark {
+  opacity: 1;
+}
+
+.m43-top-bar__logo-mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
   background: var(--m43-accent);
   opacity: 0.9;
 }
@@ -159,6 +177,7 @@ main.m43-main {
   min-width: 0;
 }
 
+.m43-top-bar__logo-button:focus-visible,
 .m43-auth-header .m43-button:focus-visible,
 .m43-auth-user__trigger:focus-visible,
 .m43-auth-user__item:focus-visible {

@@ -2,9 +2,11 @@ import {
   DEFAULT_API_BASE,
   DEFAULT_AUTH_ORIGIN,
   DEFAULT_HOME_URL,
+  DEFAULT_NAV_URL,
   buildSignInUrl,
   fetchMe,
   normalizeBaseUrl,
+  normalizeNavigationUrl,
   postLogout,
   renderAuthHeader,
 } from './auth-header-core'
@@ -28,6 +30,7 @@ function readConfig(el: HTMLScriptElement | null): {
   apiBase: string
   authOrigin: string
   homeUrl: string
+  navUrl: string
   topBarInFlow: boolean
   mount: HTMLElement | null
 } {
@@ -36,6 +39,7 @@ function readConfig(el: HTMLScriptElement | null): {
       apiBase: DEFAULT_API_BASE,
       authOrigin: DEFAULT_AUTH_ORIGIN,
       homeUrl: DEFAULT_HOME_URL,
+      navUrl: DEFAULT_NAV_URL,
       topBarInFlow: false,
       mount: null,
     }
@@ -44,6 +48,7 @@ function readConfig(el: HTMLScriptElement | null): {
   const apiBase = normalizeBaseUrl(d.m43Api ?? DEFAULT_API_BASE, DEFAULT_API_BASE)
   const authOrigin = (d.m43AuthOrigin ?? DEFAULT_AUTH_ORIGIN).trim() || DEFAULT_AUTH_ORIGIN
   const homeUrl = (d.m43HomeUrl ?? '').trim() || DEFAULT_HOME_URL
+  const navUrl = normalizeNavigationUrl(d.m43NavUrl)
   const topBarInFlow = readTopBarInFlow(el)
   const sel = (d.m43AuthMount ?? '').trim()
   let mount: HTMLElement | null = null
@@ -57,7 +62,7 @@ function readConfig(el: HTMLScriptElement | null): {
   if (!mount) {
     mount = document.querySelector('[data-m43-auth-header]') as HTMLElement | null
   }
-  return { apiBase, authOrigin, homeUrl, topBarInFlow, mount }
+  return { apiBase, authOrigin, homeUrl, navUrl, topBarInFlow, mount }
 }
 
 /**
@@ -82,7 +87,7 @@ export async function initM43AuthHeader(): Promise<void> {
     return
   }
   const el = getLoaderScript()
-  const { apiBase, authOrigin, homeUrl, topBarInFlow, mount } = readConfig(el)
+  const { apiBase, authOrigin, homeUrl, navUrl, topBarInFlow, mount } = readConfig(el)
   if (!mount) {
     // eslint-disable-next-line no-console
     console.warn(
@@ -106,7 +111,7 @@ export async function initM43AuthHeader(): Promise<void> {
   }
 
   const layout = topBarInFlow ? 'in-flow' : 'fixed'
-  renderAuthHeader(mount, me, signInUrl, onSignOut, { homeUrl, layout })
+  renderAuthHeader(mount, me, signInUrl, onSignOut, { homeUrl, navUrl, layout })
 
   if (layout === 'fixed') {
     attachFixedTopBarInset(mount)

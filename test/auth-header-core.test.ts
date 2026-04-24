@@ -5,9 +5,64 @@ import {
   DEFAULT_API_BASE,
   DEFAULT_AUTH_ORIGIN,
   DEFAULT_HOME_URL,
+  DEFAULT_NAV_URL,
   initialFromEmail,
+  normalizeNavigationUrl,
+  renderAuthHeader,
   shouldShowHomeLink,
 } from '../src/auth-header-core'
+
+class FakeClassList {
+  values = new Set<string>()
+
+  add(...tokens: string[]): void {
+    tokens.forEach((token) => this.values.add(token))
+  }
+
+  remove(...tokens: string[]): void {
+    tokens.forEach((token) => this.values.delete(token))
+  }
+}
+
+class FakeElement {
+  children: FakeElement[] = []
+  classList = new FakeClassList()
+  attributes = new Map<string, string>()
+  className = ''
+  hidden = false
+  href = ''
+  innerHTML = ''
+  textContent = ''
+  title = ''
+  type = ''
+
+  appendChild(child: FakeElement): FakeElement {
+    this.children.push(child)
+    return child
+  }
+
+  setAttribute(name: string, value: string): void {
+    this.attributes.set(name, value)
+  }
+
+  addEventListener(_eventName: string, _listener: () => void): void {
+    /* noop */
+  }
+
+  contains(child: unknown): boolean {
+    return this.children.includes(child as FakeElement)
+  }
+}
+
+function installFakeDocument(): void {
+  Object.defineProperty(globalThis, 'document', {
+    configurable: true,
+    value: {
+      createElement: () => new FakeElement(),
+      addEventListener: () => undefined,
+    },
+  })
+}
 
 describe('normalizeBaseUrl', () => {
   it('strips trailing slash', () => {
@@ -50,6 +105,50 @@ describe('DEFAULT_API_BASE', () => {
 describe('DEFAULT_HOME_URL', () => {
   it('is the portfolio apex root', () => {
     expect(DEFAULT_HOME_URL).toBe('https://michaelj43.dev/')
+  })
+})
+
+describe('DEFAULT_NAV_URL', () => {
+  it('points at the portfolio navigation page', () => {
+    expect(DEFAULT_NAV_URL).toBe('https://michaelj43.dev/navigation/')
+  })
+})
+
+describe('normalizeNavigationUrl', () => {
+  it('normalizes configured navigation URLs', () => {
+    expect(normalizeNavigationUrl('https://michaelj43.dev/navigation')).toBe('https://michaelj43.dev/navigation')
+  })
+
+  it('uses the default for empty or invalid values', () => {
+    expect(normalizeNavigationUrl('')).toBe(DEFAULT_NAV_URL)
+    expect(normalizeNavigationUrl('not a url')).toBe(DEFAULT_NAV_URL)
+  })
+})
+
+describe('renderAuthHeader navigation button', () => {
+  it('renders the top-bar mark as an accessible button', () => {
+    installFakeDocument()
+    const mount = new FakeElement()
+
+    renderAuthHeader(
+      mount as unknown as HTMLElement,
+      { ok: false, reason: 'unauthorized' },
+      'https://auth.michaelj43.dev/',
+      () => undefined,
+      {
+        homeUrl: DEFAULT_HOME_URL,
+        navUrl: 'https://michaelj43.dev/navigation/',
+        pageHref: 'https://cardgame.michaelj43.dev/',
+      },
+    )
+
+    const inner = mount.children[0]
+    const navButton = inner.children[0]
+    const logoMark = navButton.children[0]
+    expect(navButton.type).toBe('button')
+    expect(navButton.className).toBe('m43-top-bar__logo-button')
+    expect(navButton.attributes.get('aria-label')).toBe('Open site navigation')
+    expect(logoMark.className).toBe('m43-top-bar__logo-mark')
   })
 })
 
