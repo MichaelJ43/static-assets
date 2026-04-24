@@ -3,7 +3,9 @@ import {
   DEFAULT_AUTH_ORIGIN,
   DEFAULT_HOME_URL,
   DEFAULT_NAV_URL,
+  DEFAULT_NAV_DATA_URL,
   buildSignInUrl,
+  fetchNavigationItems,
   fetchMe,
   normalizeBaseUrl,
   normalizeNavigationUrl,
@@ -31,6 +33,7 @@ function readConfig(el: HTMLScriptElement | null): {
   authOrigin: string
   homeUrl: string
   navUrl: string
+  navDataUrl: string
   topBarInFlow: boolean
   mount: HTMLElement | null
 } {
@@ -40,6 +43,7 @@ function readConfig(el: HTMLScriptElement | null): {
       authOrigin: DEFAULT_AUTH_ORIGIN,
       homeUrl: DEFAULT_HOME_URL,
       navUrl: DEFAULT_NAV_URL,
+      navDataUrl: DEFAULT_NAV_DATA_URL,
       topBarInFlow: false,
       mount: null,
     }
@@ -49,6 +53,7 @@ function readConfig(el: HTMLScriptElement | null): {
   const authOrigin = (d.m43AuthOrigin ?? DEFAULT_AUTH_ORIGIN).trim() || DEFAULT_AUTH_ORIGIN
   const homeUrl = (d.m43HomeUrl ?? '').trim() || DEFAULT_HOME_URL
   const navUrl = normalizeNavigationUrl(d.m43NavUrl)
+  const navDataUrl = normalizeNavigationUrl(d.m43NavDataUrl, DEFAULT_NAV_DATA_URL)
   const topBarInFlow = readTopBarInFlow(el)
   const sel = (d.m43AuthMount ?? '').trim()
   let mount: HTMLElement | null = null
@@ -62,7 +67,7 @@ function readConfig(el: HTMLScriptElement | null): {
   if (!mount) {
     mount = document.querySelector('[data-m43-auth-header]') as HTMLElement | null
   }
-  return { apiBase, authOrigin, homeUrl, navUrl, topBarInFlow, mount }
+  return { apiBase, authOrigin, homeUrl, navUrl, navDataUrl, topBarInFlow, mount }
 }
 
 /**
@@ -87,7 +92,7 @@ export async function initM43AuthHeader(): Promise<void> {
     return
   }
   const el = getLoaderScript()
-  const { apiBase, authOrigin, homeUrl, navUrl, topBarInFlow, mount } = readConfig(el)
+  const { apiBase, authOrigin, homeUrl, navUrl, navDataUrl, topBarInFlow, mount } = readConfig(el)
   if (!mount) {
     // eslint-disable-next-line no-console
     console.warn(
@@ -96,7 +101,7 @@ export async function initM43AuthHeader(): Promise<void> {
     return
   }
 
-  const me = await fetchMe(apiBase)
+  const [me, navItems] = await Promise.all([fetchMe(apiBase), fetchNavigationItems(navDataUrl, navUrl)])
   const signInUrl = buildSignInUrl(authOrigin, location.href)
 
   const onSignOut = (): void => {
@@ -111,7 +116,7 @@ export async function initM43AuthHeader(): Promise<void> {
   }
 
   const layout = topBarInFlow ? 'in-flow' : 'fixed'
-  renderAuthHeader(mount, me, signInUrl, onSignOut, { homeUrl, navUrl, layout })
+  renderAuthHeader(mount, me, signInUrl, onSignOut, { homeUrl, navUrl, navItems, layout })
 
   if (layout === 'fixed') {
     attachFixedTopBarInset(mount)

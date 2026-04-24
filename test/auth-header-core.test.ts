@@ -5,7 +5,10 @@ import {
   DEFAULT_API_BASE,
   DEFAULT_AUTH_ORIGIN,
   DEFAULT_HOME_URL,
+  DEFAULT_NAV_DATA_URL,
   DEFAULT_NAV_URL,
+  fallbackNavigationItems,
+  fetchNavigationItems,
   initialFromEmail,
   normalizeNavigationUrl,
   renderAuthHeader,
@@ -46,6 +49,10 @@ class FakeElement {
   }
 
   addEventListener(_eventName: string, _listener: () => void): void {
+    /* noop */
+  }
+
+  focus(): void {
     /* noop */
   }
 
@@ -114,6 +121,12 @@ describe('DEFAULT_NAV_URL', () => {
   })
 })
 
+describe('DEFAULT_NAV_DATA_URL', () => {
+  it('points at the generated portfolio navigation JSON', () => {
+    expect(DEFAULT_NAV_DATA_URL).toBe('https://michaelj43.dev/navigation.json')
+  })
+})
+
 describe('normalizeNavigationUrl', () => {
   it('normalizes configured navigation URLs', () => {
     expect(normalizeNavigationUrl('https://michaelj43.dev/navigation')).toBe('https://michaelj43.dev/navigation')
@@ -125,8 +138,46 @@ describe('normalizeNavigationUrl', () => {
   })
 })
 
+describe('fetchNavigationItems', () => {
+  it('loads valid navigation items', async () => {
+    const fetchImpl = async () =>
+      ({
+        ok: true,
+        json: async () => ({
+          items: [
+            {
+              title: 'Card Game',
+              url: 'https://cardgame.michaelj43.dev',
+              description: 'Browser card game.',
+              note: 'Demo',
+            },
+          ],
+        }),
+      }) as Response
+
+    await expect(fetchNavigationItems(DEFAULT_NAV_DATA_URL, DEFAULT_NAV_URL, fetchImpl)).resolves.toEqual([
+      {
+        title: 'Card Game',
+        url: 'https://cardgame.michaelj43.dev/',
+        description: 'Browser card game.',
+        note: 'Demo',
+      },
+    ])
+  })
+
+  it('falls back to the navigation page when loading fails', async () => {
+    const fetchImpl = async () => {
+      throw new Error('network')
+    }
+
+    await expect(fetchNavigationItems(DEFAULT_NAV_DATA_URL, DEFAULT_NAV_URL, fetchImpl)).resolves.toEqual(
+      fallbackNavigationItems(DEFAULT_NAV_URL),
+    )
+  })
+})
+
 describe('renderAuthHeader navigation button', () => {
-  it('renders the top-bar mark as an accessible button', () => {
+  it('renders the top-bar mark as an accessible menu button', () => {
     installFakeDocument()
     const mount = new FakeElement()
 
@@ -138,17 +189,33 @@ describe('renderAuthHeader navigation button', () => {
       {
         homeUrl: DEFAULT_HOME_URL,
         navUrl: 'https://michaelj43.dev/navigation/',
+        navItems: [
+          {
+            title: 'Card Game',
+            url: 'https://cardgame.michaelj43.dev/',
+            note: 'Demo',
+          },
+        ],
         pageHref: 'https://cardgame.michaelj43.dev/',
       },
     )
 
     const inner = mount.children[0]
-    const navButton = inner.children[0]
+    const navWrap = inner.children[0]
+    const navButton = navWrap.children[0]
     const logoMark = navButton.children[0]
+    const navMenu = navWrap.children[1]
+    const firstItem = navMenu.children[0].children[0]
     expect(navButton.type).toBe('button')
     expect(navButton.className).toBe('m43-top-bar__logo-button')
     expect(navButton.attributes.get('aria-label')).toBe('Open site navigation')
+    expect(navButton.attributes.get('aria-haspopup')).toBe('true')
+    expect(navButton.attributes.get('aria-expanded')).toBe('false')
     expect(logoMark.className).toBe('m43-top-bar__logo-mark')
+    expect(navMenu.hidden).toBe(true)
+    expect(firstItem.textContent).toBe('')
+    expect(firstItem.children[0].textContent).toBe('Card Game')
+    expect(firstItem.children[1].textContent).toBe('Demo')
   })
 })
 
