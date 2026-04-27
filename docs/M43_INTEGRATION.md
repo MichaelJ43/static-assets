@@ -150,6 +150,7 @@ import '@michaelj43/static-assets/m43-primitives.css'
 - **Error text** — `class="m43-message--error"`.
 - **Table** — `class="m43-table"`.
 - **Narrow form card (e.g. sign-in)** — `class="m43-card m43-card--tight"`.
+- **Advisory / security hints (warm callout + optional remediation pre)** — wrap the list in `class="m43-callout-hint"`; use `class="m43-details--remediation"` on `<details>` and `class="m43-inset"` on the inner `<pre>`. Themed for light and dark. See [design.md](design.md#callout-and-inset-monospace-advisories-remediation).
 
 **Rule:** Use **`m43-` prefixed** classes for anything that should match the shared system. Keep existing product-specific class names (e.g. game table, code editor) in parallel; do not block those with global overrides.
 
