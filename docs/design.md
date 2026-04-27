@@ -51,6 +51,7 @@ Keep app-specific BEM (e.g. `hints-list`, `hints-item--warning`) **alongside** t
 
 - Apps may **re-map** a token in a local `:root` block (e.g. a brand accent) after importing the token file.
 - Layout max width is controlled by `--m43-content-max` (default `52rem`).
+- **Wide layouts:** use `--m43-content-max-xl` (default `72rem`) when the default doc width is too narrow (game tables, dense dashboards). Apply **`m43-site-header--wide`**, **`m43-main--wide`**, and/or **`m43-site-footer--wide`** on the same elements you would with the non-`--wide` shell classes. For apps that mount **`m43-auth-header.js`**, add **`m43-page--content-wide`** alongside **`m43-page`** on `<body>` so **`.m43-top-bar__inner`** matches the wider max width.
 
 ## Versioning
 

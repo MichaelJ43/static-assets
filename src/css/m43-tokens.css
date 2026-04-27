@@ -21,6 +21,8 @@
   --m43-radius-md: 0.5rem;
   --m43-radius-lg: 0.75rem;
   --m43-content-max: 52rem;
+  /** Wider cap for product surfaces (e.g. game tables, dashboards). Use with `m43-*--wide` / `m43-page--content-wide`. */
+  --m43-content-max-xl: 72rem;
   --m43-duration: 0.2s;
   --m43-ease: ease;
   --m43-ring: var(--m43-accent);
