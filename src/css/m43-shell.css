@@ -62,6 +62,25 @@ main.m43-main {
   margin: 0;
 }
 
+/* Optional wider chrome (games, tools) — aligns with `--m43-content-max-xl`. */
+.m43-site-header--wide {
+  max-width: var(--m43-content-max-xl);
+}
+
+.m43-main--wide,
+main.m43-main--wide {
+  max-width: var(--m43-content-max-xl);
+}
+
+.m43-site-footer--wide {
+  max-width: var(--m43-content-max-xl);
+}
+
+/** When the page uses wide content, keep the auth top bar inner width in sync (see `m43-auth-header.js`). */
+.m43-page.m43-page--content-wide .m43-top-bar__inner {
+  max-width: var(--m43-content-max-xl);
+}
+
 .m43-page {
   min-height: 100vh;
   display: flex;
