@@ -25,6 +25,11 @@
   --m43-ease: ease;
   --m43-ring: var(--m43-accent);
   --m43-ring-offset: 2px;
+  /* Warm hint / advisory callout (e.g. grouped “security hints”, advisory lists) */
+  --m43-surface-hint: #1a150f;
+  --m43-border-hint: #3d3024;
+  /* Nested inset monospace (remediation copy, log excerpts) — sub-surface on or off hint */
+  --m43-surface-inset: #111520;
 }
 
 @media (prefers-color-scheme: light) {
@@ -36,6 +41,9 @@
     --m43-muted: #5c6578;
     --m43-accent: #1a56c9;
     --m43-border: #d9dee8;
+    --m43-surface-hint: #fff7ed;
+    --m43-border-hint: #fed7aa;
+    --m43-surface-inset: #ffffff;
   }
 }
 

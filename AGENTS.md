@@ -6,7 +6,7 @@
 
 ## Purpose
 
-This repository ships **shared front-end assets** for personal sites and apps: CSS design tokens (`m43-tokens.css`), **shell** (header / footer) and **form/table primitives** (`m43-shell.css`, `m43-primitives.css`), and a small **browser analytics** script (`m43-analytics.js`) that posts to a JSON ingest API. Built files live in **`dist/v1/`** and are versioned for stable CDN paths.
+This repository ships **shared front-end assets** for personal sites and apps: CSS design tokens (`m43-tokens.css`), **shell** (header / footer) and **form/table primitives** (`m43-shell.css`, `m43-primitives.css`), and a small **browser analytics** script (`m43-analytics.js`) that posts to a JSON ingest API. Built files live in `**dist/v1/`** and are versioned for stable CDN paths.
 
 ## Layout
 

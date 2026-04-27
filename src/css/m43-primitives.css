@@ -138,3 +138,59 @@ a.m43-button.m43-button--primary:visited {
   color: var(--m43-muted);
   margin-top: 0.2rem;
 }
+
+/**
+ * Hint callout — warm tint for grouped advisories (security hints, operator notes).
+ * Themed with --m43-surface-hint / --m43-border-hint.
+ */
+.m43-callout-hint {
+  background: var(--m43-surface-hint);
+  border: 1px solid var(--m43-border-hint);
+  border-radius: var(--m43-radius-md);
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--m43-text);
+}
+
+/**
+ * Inset monospace — remediation text, log lines, or short shell snippets.
+ * Uses --m43-surface-inset; border matches global --m43-border for contrast in both themes.
+ */
+.m43-inset,
+pre.m43-inset {
+  margin: 0;
+  padding: 0.5rem;
+  background: var(--m43-surface-inset);
+  border: 1px solid var(--m43-border);
+  border-radius: var(--m43-radius-sm);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  overflow: auto;
+  max-height: 14rem;
+  font-family: var(--m43-font-mono);
+  color: var(--m43-text);
+  white-space: pre;
+}
+
+/**
+ * Optional disclosure for expandable remediation (e.g. <details> under a hint list item).
+ * Pair the inner <pre> with .m43-inset.
+ */
+.m43-details--remediation {
+  margin-top: 0.35rem;
+}
+
+.m43-details--remediation > summary {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+  color: var(--m43-text);
+}
+
+.m43-details--remediation > summary::-webkit-details-marker {
+  display: none;
+}
+
+.m43-details--remediation .m43-inset {
+  margin-top: 0.35rem;
+}
