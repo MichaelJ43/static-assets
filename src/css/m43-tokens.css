@@ -14,6 +14,8 @@
   --m43-text: #e8ecf4;
   --m43-muted: #9aa3b5;
   --m43-accent: #6ea8fe;
+  /* Text/icons on solid accent backgrounds (e.g. top-bar Menu control). */
+  --m43-on-accent: #0f1218;
   --m43-border: #2a3140;
   --m43-danger: #f87171;
   --m43-success: #4ade80;
@@ -42,6 +44,7 @@
     --m43-text: #1a1f2b;
     --m43-muted: #5c6578;
     --m43-accent: #1a56c9;
+    --m43-on-accent: #ffffff;
     --m43-border: #d9dee8;
     --m43-surface-hint: #fff7ed;
     --m43-border-hint: #fed7aa;

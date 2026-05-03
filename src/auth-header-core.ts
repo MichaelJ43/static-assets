@@ -257,10 +257,10 @@ export function renderAuthHeader(
   navButton.setAttribute('aria-label', 'Open site navigation')
   navButton.title = 'Navigation'
 
-  const logoMark = document.createElement('span')
-  logoMark.className = 'm43-top-bar__logo-mark'
-  logoMark.setAttribute('aria-hidden', 'true')
-  navButton.appendChild(logoMark)
+  const menuLabel = document.createElement('span')
+  menuLabel.className = 'm43-top-bar__menu-label'
+  menuLabel.textContent = 'Menu'
+  navButton.appendChild(menuLabel)
 
   const navMenu = document.createElement('ul')
   navMenu.className = 'm43-auth-user__menu m43-nav-menu__menu'
