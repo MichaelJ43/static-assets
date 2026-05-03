@@ -126,21 +126,28 @@ main.m43-main--wide {
   padding: 0.65rem 1.25rem;
 }
 
-.m43-top-bar__logo-button {
+/* Menu, Home, and Log In share one tap target and type scale (primitives load after shell; keep specificity ≥ 2 classes). */
+.m43-top-bar .m43-top-bar__logo-button,
+.m43-top-bar .m43-top-bar__home,
+.m43-top-bar .m43-auth-header .m43-button {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2rem;
-  padding: 0 0.65rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.m43-top-bar__logo-button {
   flex-shrink: 0;
   border: none;
   border-radius: var(--m43-radius-sm);
   background: var(--m43-accent);
   color: var(--m43-on-accent);
-  font: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.2;
+  font-family: inherit;
+  font-weight: 700;
   letter-spacing: 0.02em;
   cursor: pointer;
 }
