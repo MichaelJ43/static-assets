@@ -203,7 +203,7 @@ describe('renderAuthHeader navigation button', () => {
     const inner = mount.children[0]
     const navWrap = inner.children[0]
     const navButton = navWrap.children[0]
-    const logoMark = navButton.children[0]
+    const menuLabel = navButton.children[0]
     const navMenu = navWrap.children[1]
     const firstItem = navMenu.children[0].children[0]
     expect(navButton.type).toBe('button')
@@ -211,7 +211,8 @@ describe('renderAuthHeader navigation button', () => {
     expect(navButton.attributes.get('aria-label')).toBe('Open site navigation')
     expect(navButton.attributes.get('aria-haspopup')).toBe('true')
     expect(navButton.attributes.get('aria-expanded')).toBe('false')
-    expect(logoMark.className).toBe('m43-top-bar__logo-mark')
+    expect(menuLabel.className).toBe('m43-top-bar__menu-label')
+    expect(menuLabel.textContent).toBe('Menu')
     expect(navMenu.hidden).toBe(true)
     expect(firstItem.textContent).toBe('')
     expect(firstItem.children[0].textContent).toBe('Card Game')

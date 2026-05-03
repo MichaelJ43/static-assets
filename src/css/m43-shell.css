@@ -130,28 +130,27 @@ main.m43-main--wide {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  min-height: 2rem;
+  padding: 0 0.65rem;
   flex-shrink: 0;
-  padding: 0;
   border: none;
   border-radius: var(--m43-radius-sm);
-  background: transparent;
+  background: var(--m43-accent);
+  color: var(--m43-on-accent);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
   cursor: pointer;
 }
 
-.m43-top-bar__logo-button:hover .m43-top-bar__logo-mark,
-.m43-top-bar__logo-button:focus-visible .m43-top-bar__logo-mark {
-  opacity: 1;
+.m43-top-bar__logo-button:hover {
+  filter: brightness(0.97);
 }
 
-.m43-top-bar__logo-mark {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--m43-accent);
-  opacity: 0.9;
+.m43-top-bar__logo-button:active {
+  filter: brightness(0.92);
 }
 
 .m43-nav-menu {
