@@ -216,6 +216,37 @@ export type AuthHeaderRenderOptions = {
 }
 
 /**
+ * Fills an existing top-bar navigation `ul` (class `m43-nav-menu__menu`) without replacing the bar.
+ * Used after the first `renderAuthHeader` when remote navigation JSON arrives.
+ */
+export function populateNavMenuFromItems(navMenu: HTMLElement, items: NavigationMenuItem[]): void {
+  const doc = navMenu.ownerDocument ?? document
+  while (navMenu.firstChild) {
+    navMenu.removeChild(navMenu.firstChild)
+  }
+  for (const item of items) {
+    const li = doc.createElement('li')
+    li.setAttribute('role', 'none')
+    const a = doc.createElement('a')
+    a.className = 'm43-auth-user__item m43-nav-menu__item'
+    a.setAttribute('role', 'menuitem')
+    a.href = item.url
+    const label = doc.createElement('span')
+    label.className = 'm43-nav-menu__label'
+    label.textContent = item.title
+    a.appendChild(label)
+    if (item.note) {
+      const note = doc.createElement('span')
+      note.className = 'm43-nav-menu__note'
+      note.textContent = item.note
+      a.appendChild(note)
+    }
+    li.appendChild(a)
+    navMenu.appendChild(li)
+  }
+}
+
+/**
  * Renders a full-width top bar (logo, optional Home, shared-api-platform Log In / profile menu).
  * Replaces `mount`’s children; adds `m43-top-bar` on `mount`.
  */
@@ -267,26 +298,7 @@ export function renderAuthHeader(
   navMenu.setAttribute('role', 'menu')
   navMenu.hidden = true
 
-  navItems.forEach((item) => {
-    const li = document.createElement('li')
-    li.setAttribute('role', 'none')
-    const a = document.createElement('a')
-    a.className = 'm43-auth-user__item m43-nav-menu__item'
-    a.setAttribute('role', 'menuitem')
-    a.href = item.url
-    const label = document.createElement('span')
-    label.className = 'm43-nav-menu__label'
-    label.textContent = item.title
-    a.appendChild(label)
-    if (item.note) {
-      const note = document.createElement('span')
-      note.className = 'm43-nav-menu__note'
-      note.textContent = item.note
-      a.appendChild(note)
-    }
-    li.appendChild(a)
-    navMenu.appendChild(li)
-  })
+  populateNavMenuFromItems(navMenu, navItems)
 
   function closeNavMenu(): void {
     navMenu.hidden = true

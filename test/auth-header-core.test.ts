@@ -39,8 +39,20 @@ class FakeElement {
   title = ''
   type = ''
 
+  get firstChild(): FakeElement | null {
+    return this.children[0] ?? null
+  }
+
   appendChild(child: FakeElement): FakeElement {
     this.children.push(child)
+    return child
+  }
+
+  removeChild(child: FakeElement): FakeElement {
+    const i = this.children.indexOf(child as FakeElement)
+    if (i >= 0) {
+      this.children.splice(i, 1)
+    }
     return child
   }
 

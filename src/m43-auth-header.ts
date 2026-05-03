@@ -1,16 +1,12 @@
+import { runProgressiveAuthHeaderInit } from './auth-header-init'
 import {
   DEFAULT_API_BASE,
   DEFAULT_AUTH_ORIGIN,
   DEFAULT_HOME_URL,
   DEFAULT_NAV_URL,
   DEFAULT_NAV_DATA_URL,
-  buildSignInUrl,
-  fetchNavigationItems,
-  fetchMe,
   normalizeBaseUrl,
   normalizeNavigationUrl,
-  postLogout,
-  renderAuthHeader,
 } from './auth-header-core'
 
 function getLoaderScript(): HTMLScriptElement | null {
@@ -101,28 +97,29 @@ export async function initM43AuthHeader(): Promise<void> {
     return
   }
 
-  const [me, navItems] = await Promise.all([fetchMe(apiBase), fetchNavigationItems(navDataUrl, navUrl)])
-  const signInUrl = buildSignInUrl(authOrigin, location.href)
-
-  const onSignOut = (): void => {
-    void (async () => {
-      const ok = await postLogout(apiBase)
-      if (ok) {
-        location.reload()
-        return
-      }
-      window.alert('Sign out failed. Check the network and API CORS configuration.')
-    })()
-  }
-
   const layout = topBarInFlow ? 'in-flow' : 'fixed'
-  renderAuthHeader(mount, me, signInUrl, onSignOut, { homeUrl, navUrl, navItems, layout })
 
-  if (layout === 'fixed') {
-    attachFixedTopBarInset(mount)
-  } else {
-    document.documentElement.style.removeProperty('--m43-top-bar-inset')
-  }
+  await runProgressiveAuthHeaderInit(
+    {
+      mount,
+      apiBase,
+      authOrigin,
+      homeUrl,
+      navUrl,
+      navDataUrl,
+      layout,
+      pageHref: location.href,
+    },
+    {
+      onAfterFirstRender: (bar, lay) => {
+        if (lay === 'fixed') {
+          attachFixedTopBarInset(bar)
+        } else {
+          document.documentElement.style.removeProperty('--m43-top-bar-inset')
+        }
+      },
+    },
+  )
 }
 
 void initM43AuthHeader()
