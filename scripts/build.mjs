@@ -47,4 +47,11 @@ await esbuild.build({
   ...bundler,
 })
 
+await esbuild.build({
+  entryPoints: [join(root, 'src', 'm43-external-links.ts')],
+  bundle: true,
+  outfile: join(outDir, 'm43-external-links.js'),
+  ...bundler,
+})
+
 console.error(`Built to ${outDir}/`)
