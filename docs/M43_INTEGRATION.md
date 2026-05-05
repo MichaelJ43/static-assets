@@ -5,7 +5,7 @@
 | Resource | URL / package |
 |----------|-----------------|
 | **Source & releases** | [github.com/MichaelJ43/static-assets](https://github.com/MichaelJ43/static-assets) |
-| **Published assets (after deploy)** | `https://static.michaelj43.dev/v1/` — files: `m43-tokens.css`, `m43-shell.css`, `m43-primitives.css`, `m43-analytics.js`, `m43-auth-header.js` |
+| **Published assets (after deploy)** | `https://static.michaelj43.dev/v1/` — files: `m43-tokens.css`, `m43-shell.css`, `m43-primitives.css`, `m43-analytics.js`, `m43-auth-header.js`, `m43-external-links.js` |
 | **npm** | `@michaelj43/static-assets` (CSS via `import` or bundler; JS path in `package.json` `exports`) |
 
 > **Path version:** The `/v1/` prefix is the stability contract. If a future `v2` ships breaking class or token renames, old consumers keep using `v1` until they migrate.
@@ -30,6 +30,7 @@ If you need **legacy** browsers, retest in your app; m43 does not target Interne
 3. **Primitives** (`m43-primitives.css`) — buttons, labeled fields, error line, data tables, cards (including a narrow “auth card” style).
 4. **Analytics** (`m43-analytics.js`) — optional, small script: sends `pageview` events to `POST {api}/analytics/events?v=1` with a stable `appId` per product. **No cookies;** CORS on the API must allow your page origin.
 5. **Auth top bar** (`m43-auth-header.js`) — optional: **fixed** full-width strip (logo placeholder, optional **Home**, **Log In** with `returnUrl`, or **profile initial** + **Sign out** when `GET {api}/v1/auth/me` succeeds). The script measures the bar and sets **`--m43-top-bar-inset`** on `<html>` so **`m43-page`** padding keeps titles and main content below the strip while scrolling. Matches **shared-api-platform** ([`auth-spa` query + login `returnUrl`](https://github.com/MichaelJ43/shared-api-platform/blob/main/auth-spa/src/main.ts), session cookie on the apex per [auth-and-dashboard](https://github.com/MichaelJ43/shared-api-platform/blob/main/docs/auth-and-dashboard.md)).
+6. **External links helper** (`m43-external-links.js`) — optional: scans `a[href]` once on load and applies `target="_blank" rel="noopener noreferrer"` to `http(s)` links whose host differs from `window.location.hostname`.
 
 **Load order (CSS):** always **tokens → shell → primitives** (and after that, the app’s own CSS for product-specific layout).
 
@@ -132,6 +133,20 @@ import '@michaelj43/static-assets/m43-primitives.css'
 
 - add a **copy** step in build so the built site includes `m43-analytics.js` and reference it with a real URL in the built `index.html`, or  
 - in React/Vue, `import` the script URL from `node_modules` and inject a `<script>` in your HTML template (must expose `data-m43-*` on the element that loads the bundle). The simplest pattern is to **keep the CDN `<script src=".../m43-analytics.js" defer ...>` in `index.html`** next to the app root; it does not need to go through the JS bundle.
+
+---
+
+## 2b. Optional runtime external-link behavior
+
+For static pages that should open cross-host links in a new tab without hardcoding domains, include:
+
+```html
+<script src="https://static.michaelj43.dev/v1/m43-external-links.js" defer></script>
+```
+
+This helper:
+- leaves same-host, relative, hash, `mailto:`, and `tel:` links unchanged
+- marks only cross-host `http(s)` links with `target="_blank" rel="noopener noreferrer"`
 
 ---
 
