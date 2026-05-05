@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import { Window } from 'happy-dom'
-import { applyExternalLinkTargets, shouldOpenInNewTab } from '../src/external-links-core'
+import { applyExternalLinkTargets, internalDomainForHost, shouldOpenInNewTab } from '../src/external-links-core'
+
+describe('internalDomainForHost', () => {
+  it('returns apex for subdomains', () => {
+    expect(internalDomainForHost('cool-app.michaelj43.dev')).toBe('michaelj43.dev')
+  })
+
+  it('keeps localhost as-is', () => {
+    expect(internalDomainForHost('localhost')).toBe('localhost')
+  })
+})
 
 describe('shouldOpenInNewTab', () => {
   it('returns true for different http host', () => {
@@ -9,6 +19,10 @@ describe('shouldOpenInNewTab', () => {
 
   it('returns false for same host', () => {
     expect(shouldOpenInNewTab(new URL('https://michaelj43.dev/navigation/'), 'michaelj43.dev')).toBe(false)
+  })
+
+  it('returns false for same apex subdomain', () => {
+    expect(shouldOpenInNewTab(new URL('https://cool-app.michaelj43.dev/page'), 'michaelj43.dev')).toBe(false)
   })
 
   it('returns false for non-http protocol', () => {
