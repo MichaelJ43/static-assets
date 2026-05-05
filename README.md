@@ -1,5 +1,8 @@
 # `@michaelj43/static-assets`
 
+[![CI](https://github.com/MichaelJ43/static-assets/actions/workflows/ci.yml/badge.svg)](https://github.com/MichaelJ43/static-assets/actions/workflows/ci.yml)
+[![Deploy](https://github.com/MichaelJ43/static-assets/actions/workflows/deploy.yml/badge.svg)](https://github.com/MichaelJ43/static-assets/actions/workflows/deploy.yml)
+
 Shared **CSS** (design tokens, site shell, form/table primitives) and a small **`m43-analytics.js`** client for JSON event ingest. Artifacts are built into **`dist/v1/`** and intended to be published to a static CDN and/or consumed as an npm package.
 
 **Handing this to an AI in another repo?** Start with **[docs/M43_INTEGRATION.md](https://github.com/MichaelJ43/static-assets/blob/main/docs/M43_INTEGRATION.md)** — a single, copy-pasteable integration guide (includes a ready-made agent prompt). Browsers: **Chrome, Firefox, Safari, and Edge** (evergreen; see the **Browser support** section there). Source: [github.com/MichaelJ43/static-assets](https://github.com/MichaelJ43/static-assets).
