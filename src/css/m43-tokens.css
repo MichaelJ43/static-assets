@@ -52,6 +52,40 @@
   }
 }
 
+/*
+ * Explicit theme override (set by m43-auth-header.js via data-m43-theme on <html>).
+ * Placed after @media so manual choice wins over prefers-color-scheme.
+ */
+:root[data-m43-theme='light'] {
+  color-scheme: light;
+  --m43-bg: #f6f7fb;
+  --m43-surface: #ffffff;
+  --m43-elevated: #ffffff;
+  --m43-text: #1a1f2b;
+  --m43-muted: #5c6578;
+  --m43-accent: #1a56c9;
+  --m43-on-accent: #ffffff;
+  --m43-border: #d9dee8;
+  --m43-surface-hint: #fff7ed;
+  --m43-border-hint: #fed7aa;
+  --m43-surface-inset: #ffffff;
+}
+
+:root[data-m43-theme='dark'] {
+  color-scheme: dark;
+  --m43-bg: #0f1218;
+  --m43-surface: #171c26;
+  --m43-elevated: #1b2230;
+  --m43-text: #e8ecf4;
+  --m43-muted: #9aa3b5;
+  --m43-accent: #6ea8fe;
+  --m43-on-accent: #0f1218;
+  --m43-border: #2a3140;
+  --m43-surface-hint: #1a150f;
+  --m43-border-hint: #3d3024;
+  --m43-surface-inset: #111520;
+}
+
 * {
   box-sizing: border-box;
 }

@@ -8,6 +8,13 @@ import {
   normalizeBaseUrl,
   normalizeNavigationUrl,
 } from './auth-header-core'
+import {
+  M43_THEME_STORAGE_KEY,
+  applyColorSchemeToDocument,
+  parseStoredTheme,
+  readStoredTheme,
+  setThemeToggleButtonState,
+} from './theme-core'
 
 function getLoaderScript(): HTMLScriptElement | null {
   if (typeof document === 'undefined') {
@@ -87,6 +94,22 @@ export async function initM43AuthHeader(): Promise<void> {
   if (typeof window === 'undefined' || typeof document === 'undefined' || typeof location === 'undefined') {
     return
   }
+  if (typeof localStorage !== 'undefined') {
+    applyColorSchemeToDocument(document, readStoredTheme(localStorage))
+  }
+
+  window.addEventListener('storage', (e: StorageEvent) => {
+    if (e.key !== M43_THEME_STORAGE_KEY || e.storageArea !== localStorage) {
+      return
+    }
+    const theme = parseStoredTheme(e.newValue)
+    applyColorSchemeToDocument(document, theme)
+    const btn = document.querySelector('.m43-theme-toggle__button')
+    if (btn instanceof HTMLButtonElement) {
+      setThemeToggleButtonState(btn, theme)
+    }
+  })
+
   const el = getLoaderScript()
   const { apiBase, authOrigin, homeUrl, navUrl, navDataUrl, topBarInFlow, mount } = readConfig(el)
   if (!mount) {

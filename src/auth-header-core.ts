@@ -3,6 +3,14 @@
  * auth SPA reads ?returnUrl= for login). No side effects on import.
  */
 
+import {
+  applyColorSchemeToDocument,
+  cycleColorScheme,
+  readStoredTheme,
+  setThemeToggleButtonState,
+  writeStoredTheme,
+} from './theme-core'
+
 export const DEFAULT_API_BASE = 'https://api.michaelj43.dev'
 export const DEFAULT_AUTH_ORIGIN = 'https://auth.michaelj43.dev'
 /** Portfolio / site root used for the optional “Home” control (hide on that URL). */
@@ -358,6 +366,22 @@ export function renderAuthHeader(
   spacer.className = 'm43-top-bar__spacer'
   spacer.setAttribute('aria-hidden', 'true')
   inner.appendChild(spacer)
+
+  const themeStorage = typeof localStorage !== 'undefined' ? localStorage : null
+  const themeWrap = document.createElement('div')
+  themeWrap.className = 'm43-theme-toggle'
+  const themeBtn = document.createElement('button')
+  themeBtn.type = 'button'
+  themeBtn.className = 'm43-theme-toggle__button'
+  setThemeToggleButtonState(themeBtn, readStoredTheme(themeStorage))
+  themeBtn.addEventListener('click', () => {
+    const next = cycleColorScheme(readStoredTheme(themeStorage))
+    writeStoredTheme(themeStorage, next)
+    applyColorSchemeToDocument(document, next)
+    setThemeToggleButtonState(themeBtn, next)
+  })
+  themeWrap.appendChild(themeBtn)
+  inner.appendChild(themeWrap)
 
   const auth = document.createElement('div')
   auth.className = 'm43-auth-header'

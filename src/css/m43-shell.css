@@ -195,6 +195,46 @@ main.m43-main--wide {
   min-width: 0.5rem;
 }
 
+/* Theme control (m43-auth-header.js): sits left of Sign in / profile. */
+.m43-theme-toggle {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.m43-theme-toggle__button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  min-width: 3.25rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: var(--m43-radius-sm);
+  border: 1px solid var(--m43-border);
+  background: var(--m43-elevated);
+  color: var(--m43-text);
+  cursor: pointer;
+}
+
+.m43-theme-toggle__button:hover {
+  filter: brightness(0.97);
+}
+
+.m43-theme-toggle__button:active {
+  filter: brightness(0.92);
+}
+
+.m43-theme-toggle__button:focus-visible {
+  outline: 2px solid var(--m43-ring);
+  outline-offset: var(--m43-ring-offset);
+}
+
 /* Optional top row: title + legacy placement (prefer top bar above) */
 .m43-site-header__row {
   display: flex;
